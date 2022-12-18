@@ -9,7 +9,164 @@
 </head>
 
 <body>
-	<div class="header">HELLO!!!</div>
+	<header class="header">
+		<div class="container">
+			<div class="header__wrapper">
+				<div class="header__logo logo">
+				</div>
+				<nav class="header__nav">
+					<a href="#catalog" class="nav__catalog">КАТАЛОГ</a>
+					<a href="" class="nav__deliver">ДОСТАВКА И ОПЛАТА</a>
+					<a href="" class="nav__basket">КОРЗИНА</a>
+				</nav>
+			</div>
+		</div>
+	</header>
+	<main class="main">
+		<article class="background">
+			<div class="background__img_top"></div>
+			<div class="background__img_info">
+				<p class="background__text">ЗИМА 2023</p>
+				<button class="background__buttom">В КАТАЛОГ</button>
+			</div>
+			<div class="background__img_left"></div>
+			<div class="background__img_right"></div>
+		</article>
+
+		<p class="main__header" id="catalog">КАТАЛОГ</p>
+
+		<section class="products">
+			<div class="container">
+				<div class="products__wrapper">
+					<div class="filters">
+						<div class="filters__category">
+							<h3 class="filters__header">КАТЕГОРИЯ</h3>
+							<div class="category">
+								<input type="checkbox" class="category__input" id="blouses">
+								<label for="blouses" class="category__label">БЛУЗКИ</label>
+								<span class="category__span">(5/5)</span>
+							</div>
+							<div class="category">
+								<input type="checkbox" class="category__input" id="trousers">
+								<label for="trousers" class="category__label">БРЮКИ</label>
+								<span class="category__span">(5/5)</span>
+							</div>
+							<div class="category">
+								<input type="checkbox" class="category__input" id="jeans">
+								<label for="jeans" class="category__label">ДЖИНСЫ</label>
+								<span class="category__span">(5/5)</span>
+							</div>
+							<div class="category">
+								<input type="checkbox" class="category__input" id="dress">
+								<label for="dress" class="category__label">ПЛАТЬЯ</label>
+								<span class="category__span">(5/5)</span>
+							</div>
+							<div class="category">
+								<input type="checkbox" class="category__input" id="skirts">
+								<label for="skirts" class="category__label">ЮБКИ</label>
+								<span class="category__span">(5/5)</span>
+							</div>
+						</div>
+						<div class="filters__brand">
+							<h3 class="filters__header">БРЕНД</h3>
+							<div class="category">
+								<input type="checkbox" class="category__input" id="hm">
+								<label for="hm" class="category__label">H&M</label>
+								<span class="category__span">(5/5)</span>
+							</div>
+							<div class="category">
+								<input type="checkbox" class="category__input" id="mango">
+								<label for="mango" class="category__label">MANGO</label>
+								<span class="category__span">(5/5)</span>
+							</div>
+							<div class="category">
+								<input type="checkbox" class="category__input" id="reserved">
+								<label for="reserved" class="category__label">RESERVED</label>
+								<span class="category__span">(5/5)</span>
+							</div>
+							<div class="category">
+								<input type="checkbox" class="category__input" id="top_secret">
+								<label for="top_secret" class="category__label">TOP SECRET</label>
+								<span class="category__span">(5/5)</span>
+							</div>
+							<div class="category">
+								<input type="checkbox" class="category__input" id="zara">
+								<label for="zara" class="category__label">ZARA</label>
+								<span class="category__span">(5/5)</span>
+							</div>
+						</div>
+						<div class="filters__price">
+							<h3 class="filters__header">ЦЕНА</h3>
+							<div class="price__out">
+								<div class="out__from-data">$10</div>
+								<div class="out__to-data">$150</div>
+							</div>
+							<div class="price__range">
+								<input type="range" min="10" max="30" class="range__slider">
+								<!-- <input type="range" min="10" max="30" class="range__slider"> -->
+							</div>
+						</div>
+						<div class="filters__stock">
+							<h3 class="filters__header">НАЛИЧИЕ НА СКЛАДЕ</h3>
+							<div class="price__out">
+								<div class="out__from-data">1</div>
+								<div class="out__to-data">50</div>
+							</div>
+							<div class="price__range">
+								<input type="range" min="1" max="50" class="range__slider">
+								<!-- <input type="range" min="1" max="50" class="range__slider"> -->
+							</div>
+						</div>
+					</div>
+					<div class="main__products"></div>
+				</div>
+			</div>
+		</section>
+
+	</main>
+	<footer class="footer">
+		<div class="container">
+			<div class="footer__wrapper">
+				<div class="footer__contacts">
+					<div class="footer__logo logo"></div>
+					<div class="contacts__phone">Нужна помощь с заказом? <br>+375447458067</div>
+					<div class="contacts__address">info@loylen.com</div>
+					<div class="contacts__info">2022 Интернет-магазин LOYLEN <br>Все права защищены <br>Разработка дизайна</div>
+				</div>
+				<div>
+					<ul class="footer__navigation">
+						<li class="footer__catalog">
+							<h3>ПОКУПАТЕЛЯМ</h3>
+							<ul class="footer__catalog_category">
+								<li class="footer__catalog_link"><a href="">ПУБЛИЧНЫЙ ДОГОВОР</a></li>
+								<li class="footer__catalog_link"><a href="">ВОЗВРАТ</a></li>
+								<li class="footer__catalog_link"><a href="">ПОЛИТИКА ОБРАБОТКИ<br>ПЕРСОНАЛЬНЫХ ДАННЫХ</a></li>
+							</ul>
+						</li>
+						<li class="footer__deliver">
+							<h3>СЕРВИС</h3>
+							<ul class="footer__catalog_category">
+								<li class="footer__catalog_link"><a href="">ОПЛАТА И ДОСТАВКА</a></li>
+								<li class="footer__catalog_link"><a href="">СОВМЕСТНЫЕ ПОКУПКИ</a></li>
+								<li class="footer__catalog_link"><a href="">ОПТОВЫЕ ЗАКАЗЫ</a></li>
+							</ul>
+						</li>
+						<li class="footer__basket">
+							<h3>КОМПАНИЯ</h3>
+							<ul class="footer__catalog_category">
+								<li class="footer__catalog_link"><a href="">О НАС</a></li>
+								<li class="footer__catalog_link"><a href="">ОТЗЫВЫ</a></li>
+								<li class="footer__catalog_link"><a href="">БЛОГ</a></li>
+								<li class="footer__catalog_link"><a href="">КОНТАКТЫ</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</footer>
+
 </body>
+
 
 </html>

@@ -14,6 +14,14 @@ module.exports = {
 
 			},
 			{ test: /\.ts$/, loader: "ts-loader" },
+			{
+				test: /\.(png|jpg|svg|gif)$/,
+				use: ['file-loader']
+			},
+			{
+				test: /\.(woff|woff2|eot|ttf|otf)$/,
+				use: ['file-loader']
+			},
 		],
 	},
 	resolve: {

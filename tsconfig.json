@@ -1,8 +1,9 @@
 {
 	"compilerOptions": {
+		"module": "esnext",
 		"outDir": "./built",
 		"allowJs": true,
-		"target": "es5"
+		"target": "es2017"
 	},
 	"include": [
 		"./src/**/*"

@@ -1,2 +1,5 @@
 import './style.css';
-console.log("We start project!")
+import App from './pages/app';
+
+const app = new App();
+app.start();

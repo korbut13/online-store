@@ -1,27 +1,5 @@
-// import Page from '../../core/templates/page';
-// import CardProduct from '../../pages/cardProduct/cardProduct';
-// import { createAllCards } from '../../pages/cardProduct/allCards'
-// import { data } from '../../data/getData'
-
-// class MainPage extends Page {
-// 	static TextObject = {
-// 		MainTitle: "Main paige"
-// 	};
-// 	constructor(id: string) {
-// 		super(id);
-// 	}
-
-// 	render() {
-// 		const title = this.createHeaderTitle(MainPage.TextObject.MainTitle);
-// 		this.container.append(title);
-// 		return this.container
-// 	}
-// }
-// export default MainPage;
-import CardProduct from '../../pages/cardProduct/cardProduct';
+import CardProduct from '../../cards/cardProduct';
 import { data } from '../../data/getData'
-// import cardExemp from '../../pages/cardProduct/allCards'
-
 
 class MainPage {
 

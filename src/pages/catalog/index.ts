@@ -15,49 +15,49 @@ class CatalogPage extends Page {
 		<article class="background">
 			<div class="background__img_top"></div>
 			<div class="background__img_info">
-				<p class="background__text">ЗИМА 2023</p>
-				<button class="background__buttom">В КАТАЛОГ</button>
+				<p class="background__text">WINTER 2023</p>
+				<button class="background__buttom">TO CATALOG</button>
 			</div>
 			<div class="background__img_left"></div>
 			<div class="background__img_right"></div>
 		</article>
 
-		<p class="main__header" id="catalog">КАТАЛОГ</p>
+		<p class="main__header" id="catalog">CATALOG</p>
 
 		<section class="products">
 			<div class="container">
 				<div class="products__wrapper">
 					<div class="filters">
 						<div class="filters__category">
-							<h3 class="filters__header">КАТЕГОРИЯ</h3>
+							<h3 class="filters__header">CATEGORIES</h3>
 							<div class="category">
-								<input type="checkbox" class="category__input" id="smartphones" value="smartphones">
-								<label for="smartphones" class="category__label">СМАРТФОНЫ</label>
+								<input type="checkbox" class="category__input" id="blouses" value="blouses">
+								<label for="blouses" class="category__label">BLOUSES</label>
 								<span class="category__span">(5/5)</span>
 							</div>
 							<div class="category">
-								<input type="checkbox" class="category__input" id="laptops" value="laptops">
-								<label for="laptops" class="category__label">НОУТБУКИ</label>
+								<input type="checkbox" class="category__input" id="pants" value="pants">
+								<label for="pants" class="category__label">PANTS</label>
 								<span class="category__span">(5/5)</span>
 							</div>
 							<div class="category">
-								<input type="checkbox" class="category__input" id="jeans" jeans>
-								<label for="jeans" class="category__label">ДЖИНСЫ</label>
+								<input type="checkbox" class="category__input" id="jeans" value="jeans">
+								<label for="jeans" class="category__label">JEANS</label>
 								<span class="category__span">(5/5)</span>
 							</div>
 							<div class="category">
-								<input type="checkbox" class="category__input" id="dress">
-								<label for="dress" class="category__label">ПЛАТЬЯ</label>
+								<input type="checkbox" class="category__input" id="dresses">
+								<label for="dresses" class="category__label">DRESSES</label>
 								<span class="category__span">(5/5)</span>
 							</div>
 							<div class="category">
 								<input type="checkbox" class="category__input" id="skirts">
-								<label for="skirts" class="category__label">ЮБКИ</label>
+								<label for="skirts" class="category__label">SKIRTS</label>
 								<span class="category__span">(5/5)</span>
 							</div>
 						</div>
 						<div class="filters__brand">
-							<h3 class="filters__header">БРЕНД</h3>
+							<h3 class="filters__header">BRANDS</h3>
 							<div class="category">
 								<input type="checkbox" class="category__input" id="hm">
 								<label for="hm" class="category__label">H&M</label>
@@ -85,7 +85,7 @@ class CatalogPage extends Page {
 							</div>
 						</div>
 						<div class="filters__price">
-							<h3 class="filters__header">ЦЕНА</h3>
+							<h3 class="filters__header">PRICE</h3>
 							<div class="price__out">
 								<div class="out__from-data">$10</div>
 								<div class="out__to-data">$150</div>
@@ -96,7 +96,7 @@ class CatalogPage extends Page {
 							</div>
 						</div>
 						<div class="filters__stock">
-							<h3 class="filters__header">НАЛИЧИЕ НА СКЛАДЕ</h3>
+							<h3 class="filters__header">AVAILABLE IN STOCK</h3>
 							<div class="price__out">
 								<div class="out__from-data">1</div>
 								<div class="out__to-data">50</div>

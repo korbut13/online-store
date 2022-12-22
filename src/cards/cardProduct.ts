@@ -1,8 +1,6 @@
-import { data } from '../data/getData'
 
 class CardProduct {
 	private container: HTMLElement;
-	static Data = data;
 	private cont: HTMLElement;
 
 	constructor(id: string) {

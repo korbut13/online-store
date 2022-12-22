@@ -1,29 +1,30 @@
 import CardProduct from '../../cards/cardProduct';
 import { data } from '../../data/getData'
+import Page from '../../core/templates/page';
 
-class MainPage {
-
-	private container: HTMLElement;
+class MainPage extends Page {
 	private cardExemp: CardProduct;
 	dataArray = data;
-	static TextObject = {
-		MainTitle: "MainPaige"
-	}
+	filters = [];
 
 	constructor(id: string) {
-		this.container = document.createElement('div');
-		this.container.id = id;
-		this.container.classList.add('main__products');
+		super(id);
 	}
 
-	private creatHeaderTitle(text: string) {
-		const headerTitle = document.createElement('h1')
-		headerTitle.innerText = text;
-		return headerTitle;
+	setFilters(filterValue) {
+		this.filters.push(filterValue);
+		console.log(this.filters)
 	}
 
 	render() {
-		for (const product of this.dataArray.products) {
+		let sortedProducts = this.dataArray.products;
+
+
+		if (this.filters.length > 0) {
+			sortedProducts = this.dataArray.products.filter(el => el.category === this.filters[0]);
+		}
+
+		for (const product of sortedProducts) {
 			this.cardExemp = new CardProduct('card');
 			const card = this.cardExemp.createCard(product.images[0], product.title);
 			this.container.append(card);
@@ -31,7 +32,6 @@ class MainPage {
 		return this.container
 	}
 }
-
 export default MainPage
 
 

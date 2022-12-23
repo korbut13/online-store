@@ -1,14 +1,17 @@
 {
 	"compilerOptions": {
+		"module": "esnext",
+		"module": "esnext",
 		"outDir": "./dist",
 		"moduleResolution": "node",
 		"allowJs": true,
-		"target": "es6",
+		"target": "es2017",
 		"noImplicitAny": true,
-    "strict": true,
+		"strict": true,
 	},
 	"include": [
-		"./src/**/*", "src/core/components/header/header.d.ts"
+		"./src/**/*",
+		"src/core/components/header/header.d.ts"
 	],
 	"exclude": [
 		"node_modules"

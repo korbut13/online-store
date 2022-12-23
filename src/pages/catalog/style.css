@@ -213,3 +213,34 @@ li {
 	gap: 30px;
 	justify-content: space-between;
 }
+
+.card {
+	width: 23%;
+	height: 300px;
+	position: relative;
+}
+
+.cardImg {
+	width: 100%;
+	height: 100%;
+	border: 2px solid rgba(156, 153, 153, 0.216);
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.img {
+	width: 200%;
+}
+
+.card__text {
+	font-family: Futura;
+	text-align: center;
+	background-color: #f6f5f5b0;
+	width: 100%;
+	height: 50px;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}

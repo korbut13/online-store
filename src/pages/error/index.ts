@@ -1,4 +1,6 @@
 import Page from '../../core/templates/page';
+import { PageIds } from '../app';
+import './index.css';
 
 export const enum ErrorTypes {
   Error_404 = 404,
@@ -7,7 +9,7 @@ export const enum ErrorTypes {
 class ErrorPage extends Page {
   private errorType: ErrorTypes | string;
   static TextObject: { [prop: string]: string } = {
-    '404': 'Error! The page was not found..',
+    '404': 'Error 404',
   };
   constructor(id: string, errorType: ErrorTypes | string) {
     super(id);
@@ -16,7 +18,24 @@ class ErrorPage extends Page {
 
   render() {
     const title = this.createTitle(ErrorPage.TextObject[this.errorType]);
-    this.container.append(title);
+    title.classList.add('error__title');
+
+    const errorPage = document.createElement('section');
+    errorPage.classList.add('error__wrapper');
+
+    const errorMsg = document.createElement('p');
+    errorMsg.classList.add('error__text');
+    errorMsg.innerText = 'Oops! Something went wrong...';
+
+    const backBtn = document.createElement('button');
+    backBtn.classList.add('button', 'back__button');
+    backBtn.innerText = 'return to catalog';
+    backBtn.addEventListener('click', () => {
+      window.location.hash = PageIds.CatalogPage;
+    });
+
+    errorPage.append(title, errorMsg, backBtn);
+    this.container.append(errorPage);
     return this.container;
   }
 }

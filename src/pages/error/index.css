@@ -1,0 +1,47 @@
+@font-face {
+  font-family: 'Futura';
+  src: url('../../assets/fonts/FuturaPTLight.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Lovelace';
+  src: url('../../assets/fonts/Zetafonts\ -\ Lovelace\ Text\ Regular.otf') format('opentype');
+}
+
+.error__wrapper {
+  height: 630px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.error__title {
+  font-size: 46px;
+  color: #474a51;
+}
+
+.error__text {
+  margin-top: 40px;
+  font-family: 'Futura';
+  font-size: 24px;
+  line-height: 130%;
+  color: #474a51;
+}
+
+.button {
+  width: 220px;
+  height: 51px;
+  margin-top: 50px;
+  padding: 15px 35px;
+  background: #dde8f6;
+  text-transform: uppercase;
+  color: #474a51;
+  border: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: #838e9c;
+  color: #ffffff;
+}

@@ -99,6 +99,7 @@ class CatalogPage extends Page {
 		//_________________________Add cards of products to div main__products
 
 		const containerCards = this.container.querySelector('.main__products') as HTMLElement;
+
 		for (const product of this.data.products) {
 			this.cardExemp = new CardProduct();
 			const card = this.cardExemp.createCard(product.images[0], product.title);
@@ -106,8 +107,8 @@ class CatalogPage extends Page {
 		}
 		//________________________Add filter by category and brand
 
-		const containerFilterCategory = this.container.querySelector('.filters__category') as HTMLElement;
-		const containerFilterBrand = this.container.querySelector('.filters__brand') as HTMLElement;
+		const containerFilterCategory = <HTMLElement>this.container.querySelector('.filters__category');
+		const containerFilterBrand = <HTMLElement>this.container.querySelector('.filters__brand');
 
 		const allCategories = this.data.products.map((elem: { category: string, }) => elem.category);
 		const allBrands = this.data.products.map((elem: { brand: string, }) => elem.brand);

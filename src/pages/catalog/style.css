@@ -109,9 +109,34 @@ li {
 	width: calc(100% / 4);
 }
 
+.filters__category,
+.filters__brand {
+	height: 3%;
+	overflow: scroll;
+	overflow-x: hidden;
+	margin-bottom: 50px;
+}
+
+::-webkit-scrollbar {
+	width: 5px;
+	background-color: #67676775
+}
+
+/* ползунок скроллбара */
+::-webkit-scrollbar-thumb {
+	background-color: #ffffff17;
+	border-radius: 9em;
+	box-shadow: inset 1px 1px 10px #f3faf7;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background-color: #8c8d8f;
+}
+
 .filters__header {
 	font-family: Futura;
 	font-size: 24px;
+	margin-bottom: 10px;
 }
 
 .category {
@@ -121,6 +146,7 @@ li {
 .category__label,
 .category__span {
 	font-family: Futura;
+	text-transform: uppercase;
 }
 
 .category input[type="checkbox"] {
@@ -131,7 +157,7 @@ li {
 	-webkit-user-select: none;
 	position: relative;
 	padding-left: 35px;
-	margin-bottom: 10px;
+	padding-right: 5px;
 	cursor: pointer;
 }
 

@@ -2,6 +2,7 @@ import Page from '../../core/templates/page';
 import './style.css';
 import { data } from '../../core/components/data/getsData';
 import CardProduct from '../../core/templates/cardProducts';
+import FilterProduct from '../../core/templates/filtersProducts';
 
 class CatalogPage extends Page {
 	static TextObject = {
@@ -9,11 +10,36 @@ class CatalogPage extends Page {
 	};
 	data = data;
 	private cardExemp: CardProduct;
+	private filterCategory: FilterProduct;
 
 	constructor(id: string) {
 		super(id);
 		this.cardExemp = new CardProduct();
+		this.filterCategory = new FilterProduct();
 	}
+
+	getAmountOfProducts(arr: [string]) {
+		let result: { [key: string]: number } = {};
+		for (let i = 0; i < arr.length; ++i) {
+			let a = arr[i];
+			if (result[a] != undefined) {
+				++result[a];
+			}
+			else {
+				result[a] = 1;
+			}
+		}
+		return result;
+	}
+
+	createFilters(obj: { [key: string]: number }, renderContainer: HTMLElement) {
+		Object.entries(obj).forEach(([key, value]) => {
+			this.filterCategory = new FilterProduct();
+			const divCategory = this.filterCategory.renderCheckbox(key, value);
+			renderContainer.append(divCategory);
+		});
+	}
+
 	render() {
 		const layoutCatalog = `<main class="main">
 			<article class="background">
@@ -33,60 +59,10 @@ class CatalogPage extends Page {
 					<div class="products__wrapper">
 						<div class="filters">
 							<div class="filters__category">
-								<h3 class="filters__header">CATEGORIES</h3>
-								<div class="category">
-									<input type="checkbox" class="category__input" id="blouses" value="blouses">
-									<label for="blouses" class="category__label">BLOUSES</label>
-									<span class="category__span">(5/5)</span>
-								</div>
-								<div class="category">
-									<input type="checkbox" class="category__input" id="pants" value="pants">
-									<label for="pants" class="category__label">PANTS</label>
-									<span class="category__span">(5/5)</span>
-								</div>
-								<div class="category">
-									<input type="checkbox" class="category__input" id="jeans" value="jeans">
-									<label for="jeans" class="category__label">JEANS</label>
-									<span class="category__span">(5/5)</span>
-								</div>
-								<div class="category">
-									<input type="checkbox" class="category__input" id="dresses">
-									<label for="dresses" class="category__label">DRESSES</label>
-									<span class="category__span">(5/5)</span>
-								</div>
-								<div class="category">
-									<input type="checkbox" class="category__input" id="skirts">
-									<label for="skirts" class="category__label">SKIRTS</label>
-									<span class="category__span">(5/5)</span>
-								</div>
+								<h3 id="filters__category_header" class="filters__header">CATEGORIES</h3>
 							</div>
 							<div class="filters__brand">
 								<h3 class="filters__header">BRANDS</h3>
-								<div class="category">
-									<input type="checkbox" class="category__input" id="hm">
-									<label for="hm" class="category__label">H&M</label>
-									<span class="category__span">(5/5)</span>
-								</div>
-								<div class="category">
-									<input type="checkbox" class="category__input" id="mango">
-									<label for="mango" class="category__label">MANGO</label>
-									<span class="category__span">(5/5)</span>
-								</div>
-								<div class="category">
-									<input type="checkbox" class="category__input" id="reserved">
-									<label for="reserved" class="category__label">RESERVED</label>
-									<span class="category__span">(5/5)</span>
-								</div>
-								<div class="category">
-									<input type="checkbox" class="category__input" id="top_secret">
-									<label for="top_secret" class="category__label">TOP SECRET</label>
-									<span class="category__span">(5/5)</span>
-								</div>
-								<div class="category">
-									<input type="checkbox" class="category__input" id="zara">
-									<label for="zara" class="category__label">ZARA</label>
-									<span class="category__span">(5/5)</span>
-								</div>
 							</div>
 							<div class="filters__price">
 								<h3 class="filters__header">PRICE</h3>
@@ -117,13 +93,32 @@ class CatalogPage extends Page {
 			</section>
 
 		</main>`
+		console.log(this.data.products)
 		this.container.innerHTML = layoutCatalog;
+
+		//_________________________Add cards of products to div main__products
+
 		const containerCards = this.container.querySelector('.main__products') as HTMLElement;
+
 		for (const product of this.data.products) {
 			this.cardExemp = new CardProduct();
 			const card = this.cardExemp.createCard(product.images[0], product.title);
 			containerCards.append(card)
 		}
+		//________________________Add filter by category and brand
+
+		const containerFilterCategory = <HTMLElement>this.container.querySelector('.filters__category');
+		const containerFilterBrand = <HTMLElement>this.container.querySelector('.filters__brand');
+
+		const allCategories = this.data.products.map((elem: { category: string, }) => elem.category);
+		const allBrands = this.data.products.map((elem: { brand: string, }) => elem.brand);
+
+		const objCategory = this.getAmountOfProducts(allCategories);
+		const objBrand = this.getAmountOfProducts(allBrands);
+
+		this.createFilters(objCategory, containerFilterCategory);
+		this.createFilters(objBrand, containerFilterBrand);
+
 		return this.container;
 	}
 }

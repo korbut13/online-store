@@ -14,7 +14,7 @@ class CatalogPage extends Page {
 
 	constructor(id: string) {
 		super(id);
-		this.cardExemp = new CardProduct();
+		this.cardExemp = new CardProduct(id);
 		this.filterCategory = new FilterProduct();
 	}
 
@@ -101,8 +101,8 @@ class CatalogPage extends Page {
 		const containerCards = this.container.querySelector('.main__products') as HTMLElement;
 
 		for (const product of this.data.products) {
-			this.cardExemp = new CardProduct();
-			const card = this.cardExemp.createCard(product.images[0], product.title);
+			this.cardExemp = new CardProduct(`${product.id}`);
+			const card = this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
 			containerCards.append(card)
 		}
 		//________________________Add filter by category and brand

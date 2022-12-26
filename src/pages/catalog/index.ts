@@ -17,6 +17,29 @@ class CatalogPage extends Page {
 		this.cardExemp = new CardProduct();
 		this.filterCategory = new FilterProduct();
 	}
+
+	getAmountOfProducts(arr: [string]) {
+		let result: { [key: string]: number } = {};
+		for (let i = 0; i < arr.length; ++i) {
+			let a = arr[i];
+			if (result[a] != undefined) {
+				++result[a];
+			}
+			else {
+				result[a] = 1;
+			}
+		}
+		return result;
+	}
+
+	createFilters(obj: { [key: string]: number }, renderContainer: HTMLElement) {
+		Object.entries(obj).forEach(([key, value]) => {
+			this.filterCategory = new FilterProduct();
+			const divCategory = this.filterCategory.renderCheckbox(key, value);
+			renderContainer.append(divCategory);
+		});
+	}
+
 	render() {
 		const layoutCatalog = `<main class="main">
 			<article class="background">
@@ -86,39 +109,14 @@ class CatalogPage extends Page {
 		const containerFilterCategory = this.container.querySelector('.filters__category') as HTMLElement;
 		const containerFilterBrand = this.container.querySelector('.filters__brand') as HTMLElement;
 
-		const allcategoris = this.data.products.map((elem: { category: string, }) => elem.category);
-		const allbrands = this.data.products.map((elem: { brand: string, }) => elem.brand);
+		const allCategories = this.data.products.map((elem: { category: string, }) => elem.category);
+		const allBrands = this.data.products.map((elem: { brand: string, }) => elem.brand);
 
-		function getObj(arr: [string]) {
-			let result: { [key: string]: number } = {};
-			for (let i = 0; i < arr.length; ++i) {
-				let a = arr[i];
-				if (result[a] != undefined) {
-					++result[a];
-				}
-				else {
-					result[a] = 1;
-				}
-			}
-			return result;
-		}
-		const objCategory = getObj(allcategoris);
-		const objBrand = getObj(allbrands);
+		const objCategory = this.getAmountOfProducts(allCategories);
+		const objBrand = this.getAmountOfProducts(allBrands);
 
-
-		Object.entries(objCategory).forEach(([key, value]) => {
-			this.filterCategory = new FilterProduct();
-			const divCategory = this.filterCategory.renderCheckbox(key, value);
-			containerFilterCategory.append(divCategory);
-			return containerFilterCategory;
-		});
-
-		Object.entries(objBrand).forEach(([key, value]) => {
-			this.filterCategory = new FilterProduct();
-			const divCategory = this.filterCategory.renderCheckbox(key, value);
-			containerFilterBrand.append(divCategory);
-			return containerFilterBrand;
-		});
+		this.createFilters(objCategory, containerFilterCategory);
+		this.createFilters(objBrand, containerFilterBrand);
 
 		return this.container;
 	}

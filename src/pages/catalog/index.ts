@@ -18,7 +18,7 @@ class CatalogPage extends Page {
 		this.filterCategory = new FilterProduct();
 	}
 
-	getAmountOfProducts(arr: [string]) {
+	getAmountOfProducts(arr: string[]): { [key: string]: number } {
 		let result: { [key: string]: number } = {};
 		for (let i = 0; i < arr.length; ++i) {
 			let a = arr[i];
@@ -32,7 +32,7 @@ class CatalogPage extends Page {
 		return result;
 	}
 
-	createFilters(obj: { [key: string]: number }, renderContainer: HTMLElement) {
+	createFilters(obj: { [key: string]: number }, renderContainer: HTMLElement): void {
 		Object.entries(obj).forEach(([key, value]) => {
 			this.filterCategory = new FilterProduct();
 			const divCategory = this.filterCategory.renderCheckbox(key, value);
@@ -40,8 +40,9 @@ class CatalogPage extends Page {
 		});
 	}
 
-	render() {
-		const layoutCatalog = `<main class="main">
+	render(): HTMLElement {
+		console.log("It's data:", this.data)
+		const layoutCatalog: string = `<main class="main">
 			<article class="background">
 				<div class="background__img_top"></div>
 				<div class="background__img_info">
@@ -93,16 +94,15 @@ class CatalogPage extends Page {
 			</section>
 
 		</main>`
-		console.log(this.data.products)
 		this.container.innerHTML = layoutCatalog;
 
 		//_________________________Add cards of products to div main__products
 
-		const containerCards = this.container.querySelector('.main__products') as HTMLElement;
+		const containerCards = <HTMLElement>this.container.querySelector('.main__products');
 
 		for (const product of this.data.products) {
 			this.cardExemp = new CardProduct(`${product.id}`);
-			const card = this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
+			const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
 			containerCards.append(card)
 		}
 		//________________________Add filter by category and brand
@@ -110,11 +110,11 @@ class CatalogPage extends Page {
 		const containerFilterCategory = <HTMLElement>this.container.querySelector('.filters__category');
 		const containerFilterBrand = <HTMLElement>this.container.querySelector('.filters__brand');
 
-		const allCategories = this.data.products.map((elem: { category: string, }) => elem.category);
-		const allBrands = this.data.products.map((elem: { brand: string, }) => elem.brand);
+		const allCategories: string[] = this.data.products.map((elem: { category: string, }) => elem.category);
+		const allBrands: string[] = this.data.products.map((elem: { brand: string, }) => elem.brand);
 
-		const objCategory = this.getAmountOfProducts(allCategories);
-		const objBrand = this.getAmountOfProducts(allBrands);
+		const objCategory: { [key: string]: number } = this.getAmountOfProducts(allCategories);
+		const objBrand: { [key: string]: number } = this.getAmountOfProducts(allBrands);
 
 		this.createFilters(objCategory, containerFilterCategory);
 		this.createFilters(objBrand, containerFilterBrand);
@@ -122,5 +122,4 @@ class CatalogPage extends Page {
 		return this.container;
 	}
 }
-
 export default CatalogPage;

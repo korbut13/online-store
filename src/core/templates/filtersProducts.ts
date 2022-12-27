@@ -15,7 +15,7 @@ class FilterProduct {
 		this.span = document.createElement('span');
 		this.span.classList.add('category__span')
 	}
-	renderCheckbox(value: string, count: number) {
+	renderCheckbox(value: string, count: number): HTMLElement {
 		this.input.setAttribute('value', value);
 		this.input.setAttribute('id', value);
 		this.label.setAttribute('for', value);

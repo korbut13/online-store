@@ -1,0 +1,30 @@
+@font-face {
+  font-family: 'Futura';
+  src: url('../../assets/fonts/FuturaPTLight.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Lovelace';
+  src: url('../../assets/fonts/Zetafonts\ -\ Lovelace\ Text\ Regular.otf') format('opentype');
+}
+
+.cart__wrapper {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cart__title {
+  margin-top: 80px;
+  font-size: 46px;
+  color: #474a51;
+}
+
+.cart__text {
+  margin-top: 40px;
+  font-family: 'Futura';
+  font-size: 18px;
+  line-height: 130%;
+  color: #9f9d9d;
+}

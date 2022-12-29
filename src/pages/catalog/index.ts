@@ -9,6 +9,7 @@ class CatalogPage extends Page {
 		MainTitle: 'Catalog Page',
 	};
 	data = data;
+	filteraArray: string[] = [];
 	private cardExemp: CardProduct;
 	private filterCategory: FilterProduct;
 
@@ -39,6 +40,26 @@ class CatalogPage extends Page {
 			renderContainer.append(divCategory);
 		});
 	}
+
+	setFilters(filterValue: string) {
+		this.filteraArray.push(filterValue);
+	}
+	deleteFilter(filterValue: string) {
+		const index = this.filteraArray.indexOf(filterValue, 0);
+		if (index !== -1) {
+			this.filteraArray.splice(index, 1);
+			console.log("ТЕПЕРЬ так", this.filteraArray)
+		}
+		else {
+			console.log('elememt not find');
+		}
+	}
+
+	// getFiltredData() {
+	// 	return this.data.products.filter(product => {
+	// 		return this.filteraArray.includes(product.category)
+	// 	})
+	// }
 
 	render(): HTMLElement {
 		console.log("It's data:", this.data)
@@ -118,6 +139,51 @@ class CatalogPage extends Page {
 
 		this.createFilters(objCategory, containerFilterCategory);
 		this.createFilters(objBrand, containerFilterBrand);
+
+		//__________________________Adding filtering functionality
+		const butFilter = this.container.getElementsByClassName('category__input');
+
+		console.log("вот", butFilter[1 - 19])
+
+
+		for (const el of butFilter) {
+			el.addEventListener('click', () => {
+
+				if ((<HTMLInputElement>el).checked === false) {
+					containerCards.innerHTML = '';
+					this.deleteFilter((<HTMLInputElement>el).value);
+					const newData = this.data.products.filter(el => this.filteraArray.includes(el.category) || this.filteraArray.includes(el.brand));
+					console.log("теперь", newData);
+
+					for (const product of newData) {
+						this.cardExemp = new CardProduct(`${product.id}`);
+						const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
+						containerCards.append(card)
+					}
+				}
+				if ((<HTMLInputElement>el).checked === true) {
+					containerCards.innerHTML = '';
+					this.setFilters((<HTMLInputElement>el).value);
+					console.log(this.filteraArray)
+
+					const newData = this.data.products.filter(el => this.filteraArray.includes(el.category) || this.filteraArray.includes(el.brand));
+					console.log(newData);
+
+					for (const product of newData) {
+						this.cardExemp = new CardProduct(`${product.id}`);
+						const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
+						containerCards.append(card)
+					}
+				}
+				if (this.filteraArray.length === 0) {
+					for (const product of this.data.products) {
+						this.cardExemp = new CardProduct(`${product.id}`);
+						const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
+						containerCards.append(card)
+					}
+				}
+			})
+		}
 
 		return this.container;
 	}

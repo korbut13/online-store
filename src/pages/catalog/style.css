@@ -111,7 +111,7 @@ li {
 
 .filters__category,
 .filters__brand {
-	height: 3%;
+	height: 300px;
 	overflow: scroll;
 	overflow-x: hidden;
 	margin-bottom: 50px;
@@ -233,11 +233,11 @@ li {
 
 .main__products {
 	width: calc(97% - (100% / 4));
+	height: 100%;
 	background-color: #EEEEEE;
 	display: flex;
 	flex-wrap: wrap;
 	gap: 30px;
-	justify-content: space-between;
 }
 
 .card {
@@ -300,8 +300,6 @@ li {
 	top: 0;
 	left: 0;
 	text-transform: uppercase;
-
-
 }
 
 .container__button {

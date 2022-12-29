@@ -27,4 +27,5 @@ class FilterProduct {
 		return this.container;
 	}
 }
+
 export default FilterProduct;

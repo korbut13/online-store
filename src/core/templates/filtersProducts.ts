@@ -39,7 +39,6 @@ class FilterProduct {
 		this.container.classList.add('category');
 		this.input = document.createElement('input');
 		this.input.setAttribute('type', 'checkbox');
-		// this.input.classList.add('category__input');
 		this.input.classList.add(nameClass);
 		this.label = document.createElement('label');
 		this.label.classList.add('category__label');

@@ -3,6 +3,22 @@ import './style.css';
 import { data } from '../../core/components/data/getsData';
 import CardProduct from '../../core/templates/cardProducts';
 import FilterProduct from '../../core/templates/filtersProducts';
+import DataObject from '../../core/components/data/getsData';
+
+interface DataOb {
+	brand: string,
+	category: string,
+	description: string,
+	discountPercentage: number,
+	id: number,
+	images: [string],
+	price: number,
+	rating: number,
+	stock: number,
+	thumbnaill: string,
+	title: string,
+}
+
 
 class CatalogPage extends Page {
 	static TextObject = {
@@ -16,7 +32,7 @@ class CatalogPage extends Page {
 	constructor(id: string) {
 		super(id);
 		this.cardExemp = new CardProduct(id);
-		this.filterCategory = new FilterProduct();
+		this.filterCategory = new FilterProduct('categoty__input');
 	}
 
 	getAmountOfProducts(arr: string[]): { [key: string]: number } {
@@ -33,9 +49,9 @@ class CatalogPage extends Page {
 		return result;
 	}
 
-	createFilters(obj: { [key: string]: number }, renderContainer: HTMLElement): void {
+	createFilters(obj: { [key: string]: number }, renderContainer: HTMLElement, nameClass: string): void {
 		Object.entries(obj).forEach(([key, value]) => {
-			this.filterCategory = new FilterProduct();
+			this.filterCategory = new FilterProduct(nameClass);
 			const divCategory = this.filterCategory.renderCheckbox(key, value);
 			renderContainer.append(divCategory);
 		});
@@ -44,14 +60,45 @@ class CatalogPage extends Page {
 	setFilters(filterValue: string) {
 		this.filteraArray.push(filterValue);
 	}
+
 	deleteFilter(filterValue: string) {
 		const index = this.filteraArray.indexOf(filterValue, 0);
 		if (index !== -1) {
 			this.filteraArray.splice(index, 1);
-			console.log("ТЕПЕРЬ так", this.filteraArray)
+
 		}
 		else {
 			console.log('elememt not find');
+		}
+	}
+	// async getNewData(arr1: HTMLCollectionOf<Element>, arr2: string[], arr3: DataObject) {
+	// 	for (let i = 0; i < arr1.length; i++) {
+	// 		if (arr2.includes(arr1[i].id)) {
+	// 			return arr3.products.filter(el => arr2.includes(el.category) && arr2.includes(el.brand))
+	// 		}
+	// 		else {
+	// 			return arr3.products.filter(el => arr2.includes(el.category) || arr2.includes(el.brand))
+	// 		}
+	// 	}
+	// }
+	async getNewData(arr1: HTMLCollectionOf<Element>, arr2: HTMLCollectionOf<Element>) {
+		for (let my = 0; my < this.data.products.length; my++) {
+			for (let i = 0; i < arr1.length; i++) {
+				for (let j = 0; j < arr2.length; j++) {
+					if (this.filteraArray.includes(arr1[i].id) && this.filteraArray.includes(arr2[j].id)) {
+						console.log("НЕПРАВИЛЬНО")
+						return this.data.products.filter(el => this.filteraArray.includes(el.category) && this.filteraArray.includes(el.brand))
+					}
+					else if (this.filteraArray.includes(arr1[i].id) && !this.filteraArray.includes(arr2[j].id)) {
+						console.log("HELLO SVETA")
+						return this.data.products.filter(el => this.filteraArray.includes(el.category))
+					}
+					else if (this.filteraArray.includes(arr2[j].id) && !this.filteraArray.includes(arr1[i].id)) {
+						console.log("HELLO")
+						return this.data.products.filter(el => this.filteraArray.includes(el.brand))
+					}
+				}
+			}
 		}
 	}
 
@@ -62,7 +109,7 @@ class CatalogPage extends Page {
 	// }
 
 	render(): HTMLElement {
-		console.log("It's data:", this.data)
+
 		const layoutCatalog: string = `<main class="main">
 			<article class="background">
 				<div class="background__img_top"></div>
@@ -137,42 +184,54 @@ class CatalogPage extends Page {
 		const objCategory: { [key: string]: number } = this.getAmountOfProducts(allCategories);
 		const objBrand: { [key: string]: number } = this.getAmountOfProducts(allBrands);
 
-		this.createFilters(objCategory, containerFilterCategory);
-		this.createFilters(objBrand, containerFilterBrand);
+		this.createFilters(objCategory, containerFilterCategory, 'category__input');
+		this.createFilters(objBrand, containerFilterBrand, 'brand__input');
 
 		//__________________________Adding filtering functionality
-		const butFilter = this.container.getElementsByClassName('category__input');
+		const filterCategory = this.container.getElementsByClassName('category__input');
+		const filterBrand = this.container.getElementsByClassName('brand__input');
 
-		console.log("вот", butFilter[1 - 19])
-
-
-		for (const el of butFilter) {
-			el.addEventListener('click', () => {
-
+		for (const el of filterCategory) {
+			el.addEventListener('click', async () => {
 				if ((<HTMLInputElement>el).checked === false) {
 					containerCards.innerHTML = '';
 					this.deleteFilter((<HTMLInputElement>el).value);
-					const newData = this.data.products.filter(el => this.filteraArray.includes(el.category) || this.filteraArray.includes(el.brand));
-					console.log("теперь", newData);
-
-					for (const product of newData) {
-						this.cardExemp = new CardProduct(`${product.id}`);
-						const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
-						containerCards.append(card)
+					console.log("IT'S FILTERARRAY", this.filteraArray);
+					const newData = await this.getNewData(filterCategory, filterBrand);
+					console.log("IT'S NEWDATA:", newData);
+					if (newData) {
+						for (const product of newData) {
+							this.cardExemp = new CardProduct(`${product.id}`);
+							const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
+							containerCards.append(card)
+						}
 					}
+
+					// const newData = this.data.products.filter(el => this.filteraArray.includes(el.category) || this.filteraArray.includes(el.brand));
+					// console.log("it's newDataProducts", newData);
+
+					// for (const product of newData) {
+					// 	this.cardExemp = new CardProduct(`${product.id}`);
+					// 	const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
+					// 	containerCards.append(card)
+					// }
 				}
+
 				if ((<HTMLInputElement>el).checked === true) {
 					containerCards.innerHTML = '';
+
 					this.setFilters((<HTMLInputElement>el).value);
-					console.log(this.filteraArray)
+					console.log("IT'S FILTERARRAY", this.filteraArray);
 
-					const newData = this.data.products.filter(el => this.filteraArray.includes(el.category) || this.filteraArray.includes(el.brand));
-					console.log(newData);
-
-					for (const product of newData) {
-						this.cardExemp = new CardProduct(`${product.id}`);
-						const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
-						containerCards.append(card)
+					const newData = await this.getNewData(filterCategory, filterBrand);
+					console.log("IT'S NEWDATA:", newData);
+					if (newData) {
+						// window.location.href = window.location.origin + "/" + el.id;
+						for (const product of newData) {
+							this.cardExemp = new CardProduct(`${product.id}`);
+							const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
+							containerCards.append(card)
+						}
 					}
 				}
 				if (this.filteraArray.length === 0) {
@@ -184,6 +243,50 @@ class CatalogPage extends Page {
 				}
 			})
 		}
+
+		for (const el of filterBrand) {
+			el.addEventListener('click', async () => {
+				if ((<HTMLInputElement>el).checked === false) {
+					containerCards.innerHTML = '';
+					this.deleteFilter((<HTMLInputElement>el).value);
+					console.log("IT'S FILTERARRAY", this.filteraArray);
+					const newData = await this.getNewData(filterCategory, filterBrand);
+					console.log("IT'S NEWDATA:", newData);
+					if (newData) {
+						for (const product of newData) {
+							this.cardExemp = new CardProduct(`${product.id}`);
+							const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
+							containerCards.append(card)
+						}
+					}
+
+				}
+				if ((<HTMLInputElement>el).checked === true) {
+					containerCards.innerHTML = '';
+					this.setFilters((<HTMLInputElement>el).value);
+					console.log("IT'S FILTERARRAY", this.filteraArray);
+
+					const newData = await this.getNewData(filterCategory, filterBrand);
+					console.log("IT'S NEWDATA:", newData);
+					if (newData) {
+						for (const product of newData) {
+							this.cardExemp = new CardProduct(`${product.id}`);
+							const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
+							containerCards.append(card)
+						}
+					}
+				}
+				if (this.filteraArray.length === 0) {
+					for (const product of this.data.products) {
+						this.cardExemp = new CardProduct(`${product.id}`);
+						const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
+						containerCards.append(card)
+					}
+				}
+
+			})
+		}
+
 
 		return this.container;
 	}

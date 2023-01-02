@@ -83,23 +83,11 @@ class CatalogPage extends Page {
 	}
 
 	getNewData() {
-		if (this.priceRange[0] === 10 && this.priceRange[1] === 1749 && this.stockRange[0] === 2 && this.stockRange[1] === 150) {
-			return this.data.products.filter(el => (this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category))
-				&& (this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand)));
-		}
-		if ((this.priceRange[0] !== 10 || this.priceRange[1] !== 1749) && (this.stockRange[0] === 2 && this.stockRange[1] === 150)) {
-			return this.data.products.filter(el => (this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category))
-				&& (this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand)) && (el.price >= this.priceRange[0] && el.price <= this.priceRange[1]));
-		}
-		if (this.priceRange[0] === 10 && this.priceRange[1] === 1749 && (this.stockRange[0] !== 2 || this.stockRange[1] !== 150)) {
-			return this.data.products.filter(el => (this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category))
-				&& (this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand)) && (el.stock >= this.stockRange[0] && el.stock <= this.stockRange[1]));
-		}
-		if ((this.priceRange[0] !== 10 || this.priceRange[1] !== 1749) && (this.stockRange[0] !== 2 || this.stockRange[1] !== 150)) {
-			return this.data.products.filter(el => (this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category))
-				&& (this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand)) && (el.stock >= this.stockRange[0] && el.stock <= this.stockRange[1])
-				&& (el.price >= this.priceRange[0] && el.price <= this.priceRange[1]));
-		}
+		let filtredData = this.data.products.filter(el => this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category));
+		filtredData = filtredData.filter(el => this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand));
+		filtredData = filtredData.filter(el => el.stock >= this.stockRange[0] && el.stock <= this.stockRange[1]);
+		filtredData = filtredData.filter(el => el.price >= this.priceRange[0] && el.price <= this.priceRange[1]);
+		return filtredData;
 	}
 
 	functionalRangesPrice(containerInputsClassName: string, containerSpansClassName: string, containerInputsTrackClassName: string) {

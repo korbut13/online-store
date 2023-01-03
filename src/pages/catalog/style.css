@@ -296,6 +296,19 @@ input[type="range"]:active::-webkit-slider-thumb {
 	cursor: pointer;
 }
 
+.reset-total__clear-filters:hover,
+.reset-total__copy-link:hover {
+	background-color: #83848475;
+	box-shadow: 4px 4px 4px rgba(135, 133, 133, 0.577);
+}
+
+.reset-total__clear-filters:active,
+.reset-total__copy-link:active {
+	background-color: #068b8b75;
+	box-shadow: 4px 4px 4px rgba(135, 133, 133, 0.577);
+}
+
+
 .sort-of-products {
 	font-family: Futura;
 	font-size: 18px;
@@ -386,7 +399,6 @@ select {
 	display: flex;
 	flex-wrap: nowrap;
 	justify-content: center;
-	/* align-items: center; */
 	height: 30px;
 	position: absolute;
 	top: 0;

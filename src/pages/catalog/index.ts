@@ -90,78 +90,19 @@ class CatalogPage extends Page {
 		filtredData = filtredData.filter(el => el.price >= this.priceRange[0] && el.price <= this.priceRange[1]);
 		return filtredData;
 	}
-
-	functionalRangesPrice(containerInputsClassName: string, containerSpansClassName: string, containerInputsTrackClassName: string) {
-
-		let containerInputs = <HTMLElement>this.container.querySelector(containerInputsClassName);
-		let inputs = containerInputs.getElementsByTagName('input');
-		let inputOne = inputs[0];
-		let inputTwo = inputs[1];
-
-		let containerSpans = <HTMLElement>this.container.querySelector(containerSpansClassName);
-		const spans = containerSpans.getElementsByTagName('span');
-		let spanValOne = spans[0];
-		let spanValTwo = spans[2];
-
+	fillcolorInputTrack(containerInputsTrackClassName: string, inputOne: HTMLInputElement, inputTwo: HTMLInputElement) {
 		let containerTrack = <HTMLElement>this.container.querySelector(containerInputsTrackClassName);
 		let inputTrack = containerTrack.getElementsByTagName('div');
 		let sliderTrack = inputTrack[0]
 		let sliderMaxValue = inputOne.max;
-		let minGap = 0;
-		const containerForCards = <HTMLElement>this.container.querySelector('.main__products')
-
-		inputOne.addEventListener('input', () => {
-			if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
-				inputOne.value = `${parseInt(inputTwo.value) - minGap}`
-			}
-			spanValOne.textContent = inputOne.value;
-			fillcolor();
-			this.priceRange[0] = parseInt(spanValOne.textContent);
-			containerForCards.innerHTML = "";
-			const filtredData = this.getNewData();
-			if (filtredData)
-				this.createCardsOfProducts(filtredData);
-		});
-
-		inputTwo.addEventListener('input', () => {
-			if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
-				inputTwo.value = `${parseInt(inputOne.value) + minGap}`;
-			}
-			spanValTwo.textContent = inputTwo.value;
-			fillcolor();
-			this.priceRange[1] = parseInt(spanValTwo.textContent);
-			containerForCards.innerHTML = "";
-			const filtredData = this.getNewData();
-			console.log("PRICERANGE", this.priceRange);
-			console.log("filtredData", filtredData);
-			if (filtredData)
-				this.createCardsOfProducts(filtredData);
-
-		});
-		function fillcolor() {
-			let percent1 = (parseInt(inputOne.value) / parseInt(sliderMaxValue)) * 100;
-			let percent2 = (parseInt(inputTwo.value) / parseInt(sliderMaxValue)) * 100;
-			sliderTrack.style.background = `linear-gradient(to right, #dadae5 ${percent1}% ,
-				#151516 ${percent1}% , #151516 ${percent2}% , #dadae5 ${percent2}%)`;
-		}
+		let percent1 = (parseInt(inputOne.value) / parseInt(sliderMaxValue)) * 100;
+		let percent2 = (parseInt(inputTwo.value) / parseInt(sliderMaxValue)) * 100;
+		sliderTrack.style.background = `linear-gradient(to right, #dadae5 ${percent1}% ,
+			#151516 ${percent1}% , #151516 ${percent2}% , #dadae5 ${percent2}%)`;
 	}
 
-	functionalRangesStock(containerInputsClassName: string, containerSpansClassName: string, containerInputsTrackClassName: string) {
 
-		let containerInputs = <HTMLElement>this.container.querySelector(containerInputsClassName);
-		let inputs = containerInputs.getElementsByTagName('input');
-		let inputOne = inputs[0];
-		let inputTwo = inputs[1];
-
-		let containerSpans = <HTMLElement>this.container.querySelector(containerSpansClassName);
-		const spans = containerSpans.getElementsByTagName('span');
-		let spanValOne = spans[0];
-		let spanValTwo = spans[2];
-
-		let containerTrack = <HTMLElement>this.container.querySelector(containerInputsTrackClassName);
-		let inputTrack = containerTrack.getElementsByTagName('div');
-		let sliderTrack = inputTrack[0]
-		let sliderMaxValue = inputOne.max;
+	functionalRangesPrice(containerInputsTrackClassName: string, inputOne: HTMLInputElement, inputTwo: HTMLInputElement, min: HTMLSpanElement, max: HTMLSpanElement) {
 		let minGap = 0;
 		const containerForCards = <HTMLElement>this.container.querySelector('.main__products')
 
@@ -169,9 +110,9 @@ class CatalogPage extends Page {
 			if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
 				inputOne.value = `${parseInt(inputTwo.value) - minGap}`
 			}
-			spanValOne.textContent = inputOne.value;
-			fillcolor();
-			this.stockRange[0] = parseInt(spanValOne.textContent);
+			min.textContent = inputOne.value;
+			this.fillcolorInputTrack(containerInputsTrackClassName, inputOne, inputTwo);
+			this.priceRange[0] = parseInt(min.textContent);
 			containerForCards.innerHTML = "";
 			const filtredData = this.getNewData();
 			if (filtredData)
@@ -182,21 +123,46 @@ class CatalogPage extends Page {
 			if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
 				inputTwo.value = `${parseInt(inputOne.value) + minGap}`;
 			}
-			spanValTwo.textContent = inputTwo.value;
-			fillcolor();
-			this.stockRange[1] = parseInt(spanValTwo.textContent);
+			max.textContent = inputTwo.value;
+			this.fillcolorInputTrack(containerInputsTrackClassName, inputOne, inputTwo);
+			this.priceRange[1] = parseInt(max.textContent);
+			containerForCards.innerHTML = "";
+			const filtredData = this.getNewData();
+			if (filtredData)
+				this.createCardsOfProducts(filtredData);
+		});
+	}
+
+	functionalRangesStock(containerInputsTrackClassName: string, inputOne: HTMLInputElement, inputTwo: HTMLInputElement, min: HTMLSpanElement, max: HTMLSpanElement) {
+
+		let minGap = 0;
+		const containerForCards = <HTMLElement>this.container.querySelector('.main__products')
+
+		inputOne.addEventListener('input', () => {
+			if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
+				inputOne.value = `${parseInt(inputTwo.value) - minGap}`
+			}
+			min.textContent = inputOne.value;
+			this.fillcolorInputTrack(containerInputsTrackClassName, inputOne, inputTwo);
+			this.stockRange[0] = parseInt(min.textContent);
 			containerForCards.innerHTML = "";
 			const filtredData = this.getNewData();
 			if (filtredData)
 				this.createCardsOfProducts(filtredData);
 		});
 
-		function fillcolor() {
-			let percent1 = (parseInt(inputOne.value) / parseInt(sliderMaxValue)) * 100;
-			let percent2 = (parseInt(inputTwo.value) / parseInt(sliderMaxValue)) * 100;
-			sliderTrack.style.background = `linear-gradient(to right, #dadae5 ${percent1}% ,
-				#151516 ${percent1}% , #151516 ${percent2}% , #dadae5 ${percent2}%)`;
-		}
+		inputTwo.addEventListener('input', () => {
+			if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
+				inputTwo.value = `${parseInt(inputOne.value) + minGap}`;
+			}
+			max.textContent = inputTwo.value;
+			this.fillcolorInputTrack(containerInputsTrackClassName, inputOne, inputTwo);
+			this.stockRange[1] = parseInt(max.textContent);
+			containerForCards.innerHTML = "";
+			const filtredData = this.getNewData();
+			if (filtredData)
+				this.createCardsOfProducts(filtredData);
+		});
 	}
 
 	render(): HTMLElement {
@@ -358,14 +324,33 @@ class CatalogPage extends Page {
 			})
 		}
 
-		//_________________________Adding filtering functionality (by price and stock)
-		const priceArray = this.data.products.map((el) => el.price).sort((a, b) => a - b);
-		console.log(priceArray);
-		const stockArray = this.data.products.map((el) => el.stock).sort((a, b) => a - b);
-		console.log(stockArray);
+		//_________________________Adding filtering functionality by price
 
-		this.functionalRangesPrice('.price__range', '.values_price', '.price__range');
-		this.functionalRangesStock('.stock__range', '.values_stock', '.stock__range');
+		const containerInputsPrice = <HTMLElement>this.container.querySelector('.price__range');
+		const inputsPrice = containerInputsPrice.getElementsByTagName('input');
+		let inputPriceOne = inputsPrice[0];
+		let inputPriceTwo = inputsPrice[1];
+
+		let containerSpansPrice = <HTMLElement>this.container.querySelector('.values_price');
+		const minMaxPrice = containerSpansPrice.getElementsByTagName('span');
+		let minPrice = minMaxPrice[0];
+		let maxPrice = minMaxPrice[2];
+
+		this.functionalRangesPrice('.price__range', inputPriceOne, inputPriceTwo, minPrice, maxPrice);
+
+		//_________________________Adding filtering functionality by stock
+
+		const containerInputsStock = <HTMLElement>this.container.querySelector('.stock__range');
+		const inputsStock = containerInputsStock.getElementsByTagName('input');
+		let inputStockOne = inputsStock[0];
+		let inputStockTwo = inputsStock[1];
+
+		let containerSpansStock = <HTMLElement>this.container.querySelector('.values_stock');
+		const minMaxStock = containerSpansStock.getElementsByTagName('span');
+		let minStock = minMaxStock[0];
+		let maxStock = minMaxStock[2];
+
+		this.functionalRangesStock('.stock__range', inputStockOne, inputStockTwo, minStock, maxStock);
 
 		//_______________________Adding filtering functionality (by sort and search)
 
@@ -402,6 +387,35 @@ class CatalogPage extends Page {
 			}
 		})
 
+		//_______________________________________Reset Filters
+
+		const resetFilters = <HTMLElement>this.container.querySelector('.reset-total__clear-filters');
+		resetFilters.addEventListener('click', () => {
+			for (const el of filterCategory) {
+				(<HTMLInputElement>el).checked = false;
+			}
+			for (const el of filterBrand) {
+				(<HTMLInputElement>el).checked = false;
+			}
+			inputPriceOne.value = "10";
+			inputPriceTwo.value = "1749";
+			minPrice.innerText = inputPriceOne.value;
+			maxPrice.innerText = inputPriceTwo.value;
+			this.fillcolorInputTrack('.price__range', inputPriceOne, inputPriceTwo);
+
+			inputStockOne.value = "2"
+			inputStockTwo.value = "150"
+			minStock.innerText = inputStockOne.value;
+			maxStock.innerText = inputStockTwo.value;
+			this.fillcolorInputTrack('.stock__range', inputStockOne, inputStockTwo);
+
+			this.filteraArrCategory = [];
+			this.filteraArrBrand = [];
+			this.priceRange = [10, 1749];
+			this.stockRange = [2, 150];
+			containerForCards.innerHTML = "";
+			this.createCardsOfProducts(this.data.products)
+		})
 
 
 

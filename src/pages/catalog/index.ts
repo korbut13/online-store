@@ -1,6 +1,6 @@
 import Page from '../../core/templates/page';
 import './style.css';
-import { data } from '../../core/components/data/getsData';
+import DataObject, { data } from '../../core/components/data/getsData';
 import CardProduct from '../../core/templates/cardProducts';
 import FilterProduct from '../../core/templates/filtersProducts';
 
@@ -25,6 +25,7 @@ class CatalogPage extends Page {
 	data = data;
 	filteraArrCategory: string[] = [];
 	filteraArrBrand: string[] = [];
+	filterArrSearch: filtredData = [];
 	priceRange: [number, number] = [10, 1749];
 	stockRange: [number, number] = [2, 150];
 	private cardExemp: CardProduct;
@@ -68,42 +69,51 @@ class CatalogPage extends Page {
 		});
 	}
 
-	setFilters(filterValue: string, filters: string[]) {
+	setFilters(filterValue: string, filters: string[]): void {
 		filters.push(filterValue);
 	}
 
-	deleteFilter(filterValue: string, filters: string[]) {
-		const index = filters.indexOf(filterValue, 0);
+	deleteFilter(filterValue: string, filters: string[]): void {
+		const index: number = filters.indexOf(filterValue, 0);
 		if (index !== -1) {
 			filters.splice(index, 1);
-
 		}
 		else {
 			console.log('elememt not find');
 		}
 	}
 
-	getNewData() {
-		let filtredData = this.data.products.filter(el => this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category));
-		filtredData = filtredData.filter(el => this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand));
-		filtredData = filtredData.filter(el => el.stock >= this.stockRange[0] && el.stock <= this.stockRange[1]);
-		filtredData = filtredData.filter(el => el.price >= this.priceRange[0] && el.price <= this.priceRange[1]);
-		return filtredData;
+	getNewData(): filtredData {
+		if (this.filterArrSearch.length === 0) {
+			let filtredData: filtredData = this.data.products.filter(el => this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category));
+			filtredData = filtredData.filter(el => this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand));
+			filtredData = filtredData.filter(el => el.stock >= this.stockRange[0] && el.stock <= this.stockRange[1]);
+			filtredData = filtredData.filter(el => el.price >= this.priceRange[0] && el.price <= this.priceRange[1]);
+			return filtredData;
+		}
+		else {
+			let filtredData: filtredData = this.filterArrSearch.filter(el => this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category));
+			filtredData = filtredData.filter(el => this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand));
+			filtredData = filtredData.filter(el => el.stock >= this.stockRange[0] && el.stock <= this.stockRange[1]);
+			filtredData = filtredData.filter(el => el.price >= this.priceRange[0] && el.price <= this.priceRange[1]);
+			return filtredData;
+		}
 	}
-	fillcolorInputTrack(containerInputsTrackClassName: string, inputOne: HTMLInputElement, inputTwo: HTMLInputElement) {
-		let containerTrack = <HTMLElement>this.container.querySelector(containerInputsTrackClassName);
-		let inputTrack = containerTrack.getElementsByTagName('div');
-		let sliderTrack = inputTrack[0]
-		let sliderMaxValue = inputOne.max;
-		let percent1 = (parseInt(inputOne.value) / parseInt(sliderMaxValue)) * 100;
-		let percent2 = (parseInt(inputTwo.value) / parseInt(sliderMaxValue)) * 100;
+
+	fillcolorInputTrack(containerInputsTrackClassName: string, inputOne: HTMLInputElement, inputTwo: HTMLInputElement): void {
+		const containerTrack = <HTMLElement>this.container.querySelector(containerInputsTrackClassName);
+		const inputTrack = <HTMLCollectionOf<HTMLDivElement>>containerTrack.getElementsByTagName('div');
+		const sliderTrack: HTMLDivElement = inputTrack[0]
+		let sliderMaxValue: string = inputOne.max;
+		let percent1: number = (parseInt(inputOne.value) / parseInt(sliderMaxValue)) * 100;
+		let percent2: number = (parseInt(inputTwo.value) / parseInt(sliderMaxValue)) * 100;
 		sliderTrack.style.background = `linear-gradient(to right, #dadae5 ${percent1}% ,
 			#151516 ${percent1}% , #151516 ${percent2}% , #dadae5 ${percent2}%)`;
 	}
 
 
-	functionalRangesPrice(containerInputsTrackClassName: string, inputOne: HTMLInputElement, inputTwo: HTMLInputElement, min: HTMLSpanElement, max: HTMLSpanElement) {
-		let minGap = 0;
+	functionalRangesPrice(containerInputsTrackClassName: string, inputOne: HTMLInputElement, inputTwo: HTMLInputElement, min: HTMLSpanElement, max: HTMLSpanElement): void {
+		const minGap: number = 0;
 		const containerForCards = <HTMLElement>this.container.querySelector('.main__products')
 
 		inputOne.addEventListener('input', () => {
@@ -133,9 +143,9 @@ class CatalogPage extends Page {
 		});
 	}
 
-	functionalRangesStock(containerInputsTrackClassName: string, inputOne: HTMLInputElement, inputTwo: HTMLInputElement, min: HTMLSpanElement, max: HTMLSpanElement) {
+	functionalRangesStock(containerInputsTrackClassName: string, inputOne: HTMLInputElement, inputTwo: HTMLInputElement, min: HTMLSpanElement, max: HTMLSpanElement): void {
 
-		let minGap = 0;
+		const minGap = 0;
 		const containerForCards = <HTMLElement>this.container.querySelector('.main__products')
 
 		inputOne.addEventListener('input', () => {
@@ -163,6 +173,12 @@ class CatalogPage extends Page {
 			if (filtredData)
 				this.createCardsOfProducts(filtredData);
 		});
+	}
+
+	searchProduct(arr: filtredData, val: string): filtredData {
+		return arr.filter((el) => el.title.toLowerCase().includes(val.toLowerCase()) || el.brand.toLowerCase().includes(val.toLowerCase()) || el.category.toLowerCase().includes(val.toLowerCase()) ||
+			el.description.toLowerCase().includes(val) || el.discountPercentage.toString().includes(val) || el.id.toString().includes(val) ||
+			el.price.toString().includes(val.toLowerCase()) || el.rating.toString().includes(val.toLowerCase()));
 	}
 
 	render(): HTMLElement {
@@ -254,7 +270,7 @@ class CatalogPage extends Page {
 		const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
 		this.createCardsOfProducts(this.data.products, containerForCards);
 
-		//________________________Add filter by category and brand
+		//________________________Add filters by category and brand in layout
 
 		const containerFilterCategory = <HTMLElement>this.container.querySelector('.filters__category');
 		const containerFilterBrand = <HTMLElement>this.container.querySelector('.filters__brand');
@@ -270,30 +286,28 @@ class CatalogPage extends Page {
 
 		//__________________________Adding filtering functionality (by category and brand)
 
-		const filterCategory = this.container.getElementsByClassName('category__input');
-		const filterBrand = this.container.getElementsByClassName('brand__input');
+		const filterCategory: HTMLCollectionOf<Element> = this.container.getElementsByClassName('category__input');
+		const filterBrand: HTMLCollectionOf<Element> = this.container.getElementsByClassName('brand__input');
 
 		for (const el of filterCategory) {
 			el.addEventListener('click', async () => {
 				if ((<HTMLInputElement>el).checked === false) {
 					containerForCards.innerHTML = '';
 					this.deleteFilter((<HTMLInputElement>el).value, this.filteraArrCategory);
-					const filtredData = this.getNewData();
+					const filtredData: filtredData = this.getNewData();
 					if (filtredData) {
 						this.createCardsOfProducts(filtredData);
 					}
 				}
-
 				if ((<HTMLInputElement>el).checked === true) {
 					containerForCards.innerHTML = '';
 					this.setFilters((<HTMLInputElement>el).value, this.filteraArrCategory);
-					const filtredData = this.getNewData();
+					const filtredData: filtredData = this.getNewData();
 					if (filtredData) {
 						this.createCardsOfProducts(filtredData, containerForCards);
-
 					}
 				}
-				if (this.filteraArrCategory.length === 0 && this.filteraArrBrand.length === 0) {
+				if (this.filteraArrCategory.length === 0 && this.filteraArrBrand.length === 0 && this.filterArrSearch.length === 0) {
 					this.createCardsOfProducts(this.data.products);
 				}
 			})
@@ -304,21 +318,20 @@ class CatalogPage extends Page {
 				if ((<HTMLInputElement>el).checked === false) {
 					containerForCards.innerHTML = '';
 					this.deleteFilter((<HTMLInputElement>el).value, this.filteraArrBrand);
-					const filtredData = this.getNewData();
+					const filtredData: filtredData = this.getNewData();
 					if (filtredData) {
 						this.createCardsOfProducts(filtredData);
 					}
-
 				}
 				if ((<HTMLInputElement>el).checked === true) {
 					containerForCards.innerHTML = '';
 					this.setFilters((<HTMLInputElement>el).value, this.filteraArrBrand);
-					const filtredData = this.getNewData();
+					const filtredData: filtredData = this.getNewData();
 					if (filtredData) {
 						this.createCardsOfProducts(filtredData);
 					}
 				}
-				if (this.filteraArrBrand.length === 0 && this.filteraArrCategory.length === 0) {
+				if (this.filteraArrBrand.length === 0 && this.filteraArrCategory.length === 0 && this.filterArrSearch.length === 0) {
 					this.createCardsOfProducts(this.data.products, containerForCards);
 				}
 			})
@@ -327,63 +340,78 @@ class CatalogPage extends Page {
 		//_________________________Adding filtering functionality by price
 
 		const containerInputsPrice = <HTMLElement>this.container.querySelector('.price__range');
-		const inputsPrice = containerInputsPrice.getElementsByTagName('input');
-		let inputPriceOne = inputsPrice[0];
-		let inputPriceTwo = inputsPrice[1];
+		const inputsPrice: HTMLCollectionOf<HTMLInputElement> = containerInputsPrice.getElementsByTagName('input');
+		const inputPriceOne: HTMLInputElement = inputsPrice[0];
+		const inputPriceTwo: HTMLInputElement = inputsPrice[1];
 
-		let containerSpansPrice = <HTMLElement>this.container.querySelector('.values_price');
-		const minMaxPrice = containerSpansPrice.getElementsByTagName('span');
-		let minPrice = minMaxPrice[0];
-		let maxPrice = minMaxPrice[2];
+		const containerSpansPrice = <HTMLElement>this.container.querySelector('.values_price');
+		const minMaxPrice: HTMLCollectionOf<HTMLSpanElement> = containerSpansPrice.getElementsByTagName('span');
+		const minPrice: HTMLSpanElement = minMaxPrice[0];
+		const maxPrice: HTMLSpanElement = minMaxPrice[2];
 
 		this.functionalRangesPrice('.price__range', inputPriceOne, inputPriceTwo, minPrice, maxPrice);
 
 		//_________________________Adding filtering functionality by stock
 
 		const containerInputsStock = <HTMLElement>this.container.querySelector('.stock__range');
-		const inputsStock = containerInputsStock.getElementsByTagName('input');
-		let inputStockOne = inputsStock[0];
-		let inputStockTwo = inputsStock[1];
+		const inputsStock: HTMLCollectionOf<HTMLInputElement> = containerInputsStock.getElementsByTagName('input');
+		const inputStockOne: HTMLInputElement = inputsStock[0];
+		const inputStockTwo: HTMLInputElement = inputsStock[1];
 
-		let containerSpansStock = <HTMLElement>this.container.querySelector('.values_stock');
-		const minMaxStock = containerSpansStock.getElementsByTagName('span');
-		let minStock = minMaxStock[0];
-		let maxStock = minMaxStock[2];
+		const containerSpansStock = <HTMLElement>this.container.querySelector('.values_stock');
+		const minMaxStock: HTMLCollectionOf<HTMLSpanElement> = containerSpansStock.getElementsByTagName('span');
+		const minStock: HTMLSpanElement = minMaxStock[0];
+		const maxStock: HTMLSpanElement = minMaxStock[2];
 
 		this.functionalRangesStock('.stock__range', inputStockOne, inputStockTwo, minStock, maxStock);
 
-		//_______________________Adding filtering functionality (by sort and search)
+		//_______________________Adding filtering functionality by sort
 
-		let options = <HTMLElement>this.container.querySelector('.sort-of-products-select');
+		const options = <HTMLElement>this.container.querySelector('.sort-of-products-select');
 		options.addEventListener('change', (event) => {
-			const selectedValue = (<HTMLInputElement>event.target).value;
+			const selectedValue: string = (<HTMLInputElement>event.target).value;
+
 			if (selectedValue === "price-ASC") {
-				const filtredData = this.getNewData();
-				if (filtredData) {
-					containerForCards.innerHTML = ""
-					this.createCardsOfProducts(filtredData.sort((a, b) => a.price - b.price));
-				}
+				const filtredData: filtredData = this.getNewData();
+				containerForCards.innerHTML = ""
+				this.createCardsOfProducts(filtredData.sort((a, b) => a.price - b.price));
 			}
 			if (selectedValue === "price-DESC") {
-				const filtredData = this.getNewData();
-				if (filtredData) {
-					containerForCards.innerHTML = ""
-					this.createCardsOfProducts(filtredData.sort((a, b) => b.price - a.price));
-				}
+				const filtredData: filtredData = this.getNewData();
+				containerForCards.innerHTML = ""
+				this.createCardsOfProducts(filtredData.sort((a, b) => b.price - a.price));
 			}
 			if (selectedValue === "rating-ASC") {
-				const filtredData = this.getNewData();
-				if (filtredData) {
-					containerForCards.innerHTML = ""
-					this.createCardsOfProducts(filtredData.sort((a, b) => a.rating - b.rating));
-				}
+				const filtredData: filtredData = this.getNewData();
+				containerForCards.innerHTML = ""
+				this.createCardsOfProducts(filtredData.sort((a, b) => a.rating - b.rating));
 			}
 			if (selectedValue === "rating-DESC") {
-				const filtredData = this.getNewData();
-				if (filtredData) {
-					containerForCards.innerHTML = ""
-					this.createCardsOfProducts(filtredData.sort((a, b) => b.rating - a.rating));
-				}
+				const filtredData: filtredData = this.getNewData();
+				containerForCards.innerHTML = ""
+				this.createCardsOfProducts(filtredData.sort((a, b) => b.rating - a.rating));
+			}
+		})
+
+		//_______________________Adding filtering functionality by search
+
+		const inputSearch = <HTMLInputElement>this.container.querySelector('.search-of-products');
+
+		inputSearch.addEventListener('input', () => {
+
+			let val: string = inputSearch.value.trim();
+			if (val !== "") {
+				this.filterArrSearch = this.searchProduct(this.data.products, val);
+				const filtredData: filtredData = this.getNewData();
+				const searchedArrData: filtredData = this.searchProduct(filtredData, val)
+				containerForCards.innerHTML = "";
+				this.createCardsOfProducts(searchedArrData);
+			}
+			else {
+				this.filterArrSearch = [];
+				const filtredData: filtredData = this.getNewData();
+				containerForCards.innerHTML = "";
+				this.createCardsOfProducts(filtredData);
 			}
 		})
 
@@ -409,16 +437,16 @@ class CatalogPage extends Page {
 			maxStock.innerText = inputStockTwo.value;
 			this.fillcolorInputTrack('.stock__range', inputStockOne, inputStockTwo);
 
+			inputSearch.value = "";
+
 			this.filteraArrCategory = [];
 			this.filteraArrBrand = [];
+			this.filterArrSearch = [];
 			this.priceRange = [10, 1749];
 			this.stockRange = [2, 150];
 			containerForCards.innerHTML = "";
 			this.createCardsOfProducts(this.data.products)
 		})
-
-
-
 		return this.container;
 	}
 }

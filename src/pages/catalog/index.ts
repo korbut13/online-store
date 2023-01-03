@@ -291,6 +291,7 @@ class CatalogPage extends Page {
 					containerForCards.innerHTML = '';
 					this.deleteFilter((<HTMLInputElement>el).value, this.filteraArrCategory);
 					const filtredData = this.getNewData();
+
 					if (filtredData) {
 						this.createCardsOfProducts(filtredData);
 					}

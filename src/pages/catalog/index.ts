@@ -30,7 +30,6 @@ class CatalogPage extends Page {
 	private cardExemp: CardProduct;
 	private filterCategory: FilterProduct;
 
-
 	constructor(id: string) {
 		super(id);
 		this.cardExemp = new CardProduct(id);
@@ -38,6 +37,8 @@ class CatalogPage extends Page {
 	}
 
 	createCardsOfProducts(arrFiltredProducts: filtredData, containerForCards = <HTMLElement>this.container.querySelector('.main__products')): void {
+		const countOfProducts = <HTMLElement>this.container.querySelector('.count-of-products');
+		countOfProducts.innerHTML = `Find: ${arrFiltredProducts.length}`;
 		for (const product of arrFiltredProducts) {
 			this.cardExemp = new CardProduct(`${product.id}`);
 			const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
@@ -215,6 +216,26 @@ class CatalogPage extends Page {
 
 			<section class="products">
 				<div class="container">
+				  <div class="sort-search">
+					  <div class="reset-total">
+						  <button class="reset-total__clear-filters">Reset filters</button>
+						  <button class="reset-total__copy-link">Copy link</button>
+					  </div>
+					  <div class="sort-of-products">
+						  <label for="sort-of-products">Sort options:</label>
+						  <select name="products" id="sort-of-products" class="sort-of-products-select">
+						    <option value="">--Sort options:--</option>
+							  <option value="price-ASC">Sort by price ASC</option>
+							  <option value="price-DESC">Sort by price DESC</option>
+							  <option value="rating-ASC">Sort by rating ASC</option>
+							  <option value="rating-DESC">Sort by rating DESC</option>
+						  </select>
+					  </div>
+					  <div class="count-of-products"></div>
+					  <div class="search">
+						  <input type="search" class="search-of-products" placeholder="Search product">
+					  </div>
+				  </div>
 					<div class="products__wrapper">
 						<div class="filters">
 							<div class="filters__category">
@@ -281,7 +302,8 @@ class CatalogPage extends Page {
 		this.createFilters(objCategory, containerFilterCategory, 'category__input');
 		this.createFilters(objBrand, containerFilterBrand, 'brand__input');
 
-		//__________________________Adding filtering functionality
+		//__________________________Adding filtering functionality (by category and brand)
+
 		const filterCategory = this.container.getElementsByClassName('category__input');
 		const filterBrand = this.container.getElementsByClassName('brand__input');
 
@@ -302,6 +324,7 @@ class CatalogPage extends Page {
 					const filtredData = this.getNewData();
 					if (filtredData) {
 						this.createCardsOfProducts(filtredData, containerForCards);
+
 					}
 				}
 				if (this.filteraArrCategory.length === 0 && this.filteraArrBrand.length === 0) {
@@ -335,7 +358,7 @@ class CatalogPage extends Page {
 			})
 		}
 
-		//_________________________Filter of price
+		//_________________________Adding filtering functionality (by price and stock)
 		const priceArray = this.data.products.map((el) => el.price).sort((a, b) => a - b);
 		console.log(priceArray);
 		const stockArray = this.data.products.map((el) => el.stock).sort((a, b) => a - b);
@@ -343,6 +366,43 @@ class CatalogPage extends Page {
 
 		this.functionalRangesPrice('.price__range', '.values_price', '.price__range');
 		this.functionalRangesStock('.stock__range', '.values_stock', '.stock__range');
+
+		//_______________________Adding filtering functionality (by sort and search)
+
+		let options = <HTMLElement>this.container.querySelector('.sort-of-products-select');
+		options.addEventListener('change', (event) => {
+			const selectedValue = (<HTMLInputElement>event.target).value;
+			if (selectedValue === "price-ASC") {
+				const filtredData = this.getNewData();
+				if (filtredData) {
+					containerForCards.innerHTML = ""
+					this.createCardsOfProducts(filtredData.sort((a, b) => a.price - b.price));
+				}
+			}
+			if (selectedValue === "price-DESC") {
+				const filtredData = this.getNewData();
+				if (filtredData) {
+					containerForCards.innerHTML = ""
+					this.createCardsOfProducts(filtredData.sort((a, b) => b.price - a.price));
+				}
+			}
+			if (selectedValue === "rating-ASC") {
+				const filtredData = this.getNewData();
+				if (filtredData) {
+					containerForCards.innerHTML = ""
+					this.createCardsOfProducts(filtredData.sort((a, b) => a.rating - b.rating));
+				}
+			}
+			if (selectedValue === "rating-DESC") {
+				const filtredData = this.getNewData();
+				if (filtredData) {
+					containerForCards.innerHTML = ""
+					this.createCardsOfProducts(filtredData.sort((a, b) => b.rating - a.rating));
+				}
+			}
+		})
+
+
 
 
 		return this.container;

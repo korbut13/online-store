@@ -4,18 +4,45 @@ import { data } from '../../core/components/data/getsData';
 import CardProduct from '../../core/templates/cardProducts';
 import FilterProduct from '../../core/templates/filtersProducts';
 
+type filtredData = {
+	brand: string;
+	category: string;
+	description: string;
+	discountPercentage: number;
+	id: number;
+	images: [string];
+	price: number;
+	rating: number;
+	stock: number;
+	thumbnaill: string;
+	title: string;
+}[];
+
 class CatalogPage extends Page {
 	static TextObject = {
 		MainTitle: 'Catalog Page',
 	};
 	data = data;
+	filteraArrCategory: string[] = [];
+	filteraArrBrand: string[] = [];
+	priceRange: [number, number] = [10, 1749];
+	stockRange: [number, number] = [2, 150];
 	private cardExemp: CardProduct;
 	private filterCategory: FilterProduct;
+
 
 	constructor(id: string) {
 		super(id);
 		this.cardExemp = new CardProduct(id);
-		this.filterCategory = new FilterProduct();
+		this.filterCategory = new FilterProduct('categoty__input');
+	}
+
+	createCardsOfProducts(arrFiltredProducts: filtredData, containerForCards = <HTMLElement>this.container.querySelector('.main__products')): void {
+		for (const product of arrFiltredProducts) {
+			this.cardExemp = new CardProduct(`${product.id}`);
+			const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
+			containerForCards.append(card);
+		}
 	}
 
 	getAmountOfProducts(arr: string[]): { [key: string]: number } {
@@ -32,16 +59,147 @@ class CatalogPage extends Page {
 		return result;
 	}
 
-	createFilters(obj: { [key: string]: number }, renderContainer: HTMLElement): void {
+	createFilters(obj: { [key: string]: number }, renderContainer: HTMLElement, nameClass: string): void {
 		Object.entries(obj).forEach(([key, value]) => {
-			this.filterCategory = new FilterProduct();
+			this.filterCategory = new FilterProduct(nameClass);
 			const divCategory = this.filterCategory.renderCheckbox(key, value);
 			renderContainer.append(divCategory);
 		});
 	}
 
+	setFilters(filterValue: string, filters: string[]) {
+		filters.push(filterValue);
+	}
+
+	deleteFilter(filterValue: string, filters: string[]) {
+		const index = filters.indexOf(filterValue, 0);
+		if (index !== -1) {
+			filters.splice(index, 1);
+
+		}
+		else {
+			console.log('elememt not find');
+		}
+	}
+
+	getNewData() {
+		let filtredData = this.data.products.filter(el => this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category));
+		filtredData = filtredData.filter(el => this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand));
+		filtredData = filtredData.filter(el => el.stock >= this.stockRange[0] && el.stock <= this.stockRange[1]);
+		filtredData = filtredData.filter(el => el.price >= this.priceRange[0] && el.price <= this.priceRange[1]);
+		return filtredData;
+	}
+
+	functionalRangesPrice(containerInputsClassName: string, containerSpansClassName: string, containerInputsTrackClassName: string) {
+
+		let containerInputs = <HTMLElement>this.container.querySelector(containerInputsClassName);
+		let inputs = containerInputs.getElementsByTagName('input');
+		let inputOne = inputs[0];
+		let inputTwo = inputs[1];
+
+		let containerSpans = <HTMLElement>this.container.querySelector(containerSpansClassName);
+		const spans = containerSpans.getElementsByTagName('span');
+		let spanValOne = spans[0];
+		let spanValTwo = spans[2];
+
+		let containerTrack = <HTMLElement>this.container.querySelector(containerInputsTrackClassName);
+		let inputTrack = containerTrack.getElementsByTagName('div');
+		let sliderTrack = inputTrack[0]
+		let sliderMaxValue = inputOne.max;
+		let minGap = 0;
+		const containerForCards = <HTMLElement>this.container.querySelector('.main__products')
+
+		inputOne.addEventListener('input', () => {
+			if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
+				inputOne.value = `${parseInt(inputTwo.value) - minGap}`
+			}
+			spanValOne.textContent = inputOne.value;
+			fillcolor();
+			this.priceRange[0] = parseInt(spanValOne.textContent);
+			containerForCards.innerHTML = "";
+			const filtredData = this.getNewData();
+			if (filtredData)
+				this.createCardsOfProducts(filtredData);
+		});
+
+		inputTwo.addEventListener('input', () => {
+			if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
+				inputTwo.value = `${parseInt(inputOne.value) + minGap}`;
+			}
+			spanValTwo.textContent = inputTwo.value;
+			fillcolor();
+			this.priceRange[1] = parseInt(spanValTwo.textContent);
+			containerForCards.innerHTML = "";
+			const filtredData = this.getNewData();
+			console.log("PRICERANGE", this.priceRange);
+			console.log("filtredData", filtredData);
+			if (filtredData)
+				this.createCardsOfProducts(filtredData);
+
+		});
+		function fillcolor() {
+			let percent1 = (parseInt(inputOne.value) / parseInt(sliderMaxValue)) * 100;
+			let percent2 = (parseInt(inputTwo.value) / parseInt(sliderMaxValue)) * 100;
+			sliderTrack.style.background = `linear-gradient(to right, #dadae5 ${percent1}% ,
+				#151516 ${percent1}% , #151516 ${percent2}% , #dadae5 ${percent2}%)`;
+		}
+	}
+
+	functionalRangesStock(containerInputsClassName: string, containerSpansClassName: string, containerInputsTrackClassName: string) {
+
+		let containerInputs = <HTMLElement>this.container.querySelector(containerInputsClassName);
+		let inputs = containerInputs.getElementsByTagName('input');
+		let inputOne = inputs[0];
+		let inputTwo = inputs[1];
+
+		let containerSpans = <HTMLElement>this.container.querySelector(containerSpansClassName);
+		const spans = containerSpans.getElementsByTagName('span');
+		let spanValOne = spans[0];
+		let spanValTwo = spans[2];
+
+		let containerTrack = <HTMLElement>this.container.querySelector(containerInputsTrackClassName);
+		let inputTrack = containerTrack.getElementsByTagName('div');
+		let sliderTrack = inputTrack[0]
+		let sliderMaxValue = inputOne.max;
+		let minGap = 0;
+		const containerForCards = <HTMLElement>this.container.querySelector('.main__products')
+
+		inputOne.addEventListener('input', () => {
+			if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
+				inputOne.value = `${parseInt(inputTwo.value) - minGap}`
+			}
+			spanValOne.textContent = inputOne.value;
+			fillcolor();
+			this.stockRange[0] = parseInt(spanValOne.textContent);
+			containerForCards.innerHTML = "";
+			const filtredData = this.getNewData();
+			if (filtredData)
+				this.createCardsOfProducts(filtredData);
+		});
+
+		inputTwo.addEventListener('input', () => {
+			if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
+				inputTwo.value = `${parseInt(inputOne.value) + minGap}`;
+			}
+			spanValTwo.textContent = inputTwo.value;
+			fillcolor();
+			this.stockRange[1] = parseInt(spanValTwo.textContent);
+			containerForCards.innerHTML = "";
+			const filtredData = this.getNewData();
+			if (filtredData)
+				this.createCardsOfProducts(filtredData);
+		});
+
+		function fillcolor() {
+			let percent1 = (parseInt(inputOne.value) / parseInt(sliderMaxValue)) * 100;
+			let percent2 = (parseInt(inputTwo.value) / parseInt(sliderMaxValue)) * 100;
+			sliderTrack.style.background = `linear-gradient(to right, #dadae5 ${percent1}% ,
+				#151516 ${percent1}% , #151516 ${percent2}% , #dadae5 ${percent2}%)`;
+		}
+	}
+
 	render(): HTMLElement {
-		console.log("It's data:", this.data)
+
 		const layoutCatalog: string = `<main class="main">
 			<article class="background">
 				<div class="background__img_top"></div>
@@ -67,25 +225,33 @@ class CatalogPage extends Page {
 							</div>
 							<div class="filters__price">
 								<h3 class="filters__header">PRICE</h3>
-								<div class="price__out">
-									<div class="out__from-data">$10</div>
-									<div class="out__to-data">$150</div>
-								</div>
-								<div class="price__range">
-									<input type="range" min="10" max="30" class="range__slider">
-									<!-- <input type="range" min="10" max="30" class="range__slider"> -->
-								</div>
+								<div class="price">
+									<div class="values_price">
+										<span class="range-1">10</span>
+										<span>&ndash;</span>
+										<span class="range-2">1749</span>
+									</div>
+									<div class="price__range">
+										<div class="slider-track"></div>
+										<input type="range" class="slider-1" value="0" min="10" max="1749">
+										<input type="range" class="slider-2" value="1749" min="10" max="1749">
+									</div>
+							</div>
 							</div>
 							<div class="filters__stock">
 								<h3 class="filters__header">AVAILABLE IN STOCK</h3>
-								<div class="price__out">
-									<div class="out__from-data">1</div>
-									<div class="out__to-data">50</div>
-								</div>
-								<div class="price__range">
-									<input type="range" min="1" max="50" class="range__slider">
-									<!-- <input type="range" min="1" max="50" class="range__slider"> -->
-								</div>
+								<div class="stock">
+									<div class="values_stock">
+										<span class="range-1">2</span>
+										<span>&ndash;</span>
+										<span class="range-2">150</span>
+									</div>
+									<div class="stock__range">
+										<div class="slider-track"></div>
+										<input type="range" class="slider-1" value="0" min="2" max="150">
+										<input type="range" class="slider-2" value="150" min="2" max="150">
+									</div>
+							  </div>
 							</div>
 						</div>
 						<div class="main__products"></div>
@@ -98,13 +264,9 @@ class CatalogPage extends Page {
 
 		//_________________________Add cards of products to div main__products
 
-		const containerCards = <HTMLElement>this.container.querySelector('.main__products');
+		const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
+		this.createCardsOfProducts(this.data.products, containerForCards);
 
-		for (const product of this.data.products) {
-			this.cardExemp = new CardProduct(`${product.id}`);
-			const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
-			containerCards.append(card)
-		}
 		//________________________Add filter by category and brand
 
 		const containerFilterCategory = <HTMLElement>this.container.querySelector('.filters__category');
@@ -116,8 +278,72 @@ class CatalogPage extends Page {
 		const objCategory: { [key: string]: number } = this.getAmountOfProducts(allCategories);
 		const objBrand: { [key: string]: number } = this.getAmountOfProducts(allBrands);
 
-		this.createFilters(objCategory, containerFilterCategory);
-		this.createFilters(objBrand, containerFilterBrand);
+		this.createFilters(objCategory, containerFilterCategory, 'category__input');
+		this.createFilters(objBrand, containerFilterBrand, 'brand__input');
+
+		//__________________________Adding filtering functionality
+		const filterCategory = this.container.getElementsByClassName('category__input');
+		const filterBrand = this.container.getElementsByClassName('brand__input');
+
+		for (const el of filterCategory) {
+			el.addEventListener('click', async () => {
+				if ((<HTMLInputElement>el).checked === false) {
+					containerForCards.innerHTML = '';
+					this.deleteFilter((<HTMLInputElement>el).value, this.filteraArrCategory);
+					const filtredData = this.getNewData();
+					if (filtredData) {
+						this.createCardsOfProducts(filtredData);
+					}
+				}
+
+				if ((<HTMLInputElement>el).checked === true) {
+					containerForCards.innerHTML = '';
+					this.setFilters((<HTMLInputElement>el).value, this.filteraArrCategory);
+					const filtredData = this.getNewData();
+					if (filtredData) {
+						this.createCardsOfProducts(filtredData, containerForCards);
+					}
+				}
+				if (this.filteraArrCategory.length === 0 && this.filteraArrBrand.length === 0) {
+					this.createCardsOfProducts(this.data.products);
+				}
+			})
+		}
+
+		for (const el of filterBrand) {
+			el.addEventListener('click', async () => {
+				if ((<HTMLInputElement>el).checked === false) {
+					containerForCards.innerHTML = '';
+					this.deleteFilter((<HTMLInputElement>el).value, this.filteraArrBrand);
+					const filtredData = this.getNewData();
+					if (filtredData) {
+						this.createCardsOfProducts(filtredData);
+					}
+
+				}
+				if ((<HTMLInputElement>el).checked === true) {
+					containerForCards.innerHTML = '';
+					this.setFilters((<HTMLInputElement>el).value, this.filteraArrBrand);
+					const filtredData = this.getNewData();
+					if (filtredData) {
+						this.createCardsOfProducts(filtredData);
+					}
+				}
+				if (this.filteraArrBrand.length === 0 && this.filteraArrCategory.length === 0) {
+					this.createCardsOfProducts(this.data.products, containerForCards);
+				}
+			})
+		}
+
+		//_________________________Filter of price
+		const priceArray = this.data.products.map((el) => el.price).sort((a, b) => a - b);
+		console.log(priceArray);
+		const stockArray = this.data.products.map((el) => el.stock).sort((a, b) => a - b);
+		console.log(stockArray);
+
+		this.functionalRangesPrice('.price__range', '.values_price', '.price__range');
+		this.functionalRangesStock('.stock__range', '.values_stock', '.stock__range');
+
 
 		return this.container;
 	}

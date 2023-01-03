@@ -1,6 +1,6 @@
 const URL: string = 'https://dummyjson.com/products?limit=100';
 
-interface DataObject {
+export default interface DataObject {
 	products: [{
 		brand: string,
 		category: string,

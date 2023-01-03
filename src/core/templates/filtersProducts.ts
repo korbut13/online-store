@@ -4,12 +4,12 @@ class FilterProduct {
 	private label: HTMLElement;
 	private span: HTMLElement;
 
-	constructor() {
+	constructor(nameClass: string) {
 		this.container = document.createElement('div');
 		this.container.classList.add('category');
 		this.input = document.createElement('input');
 		this.input.setAttribute('type', 'checkbox');
-		this.input.classList.add('category__input');
+		this.input.classList.add(nameClass);
 		this.label = document.createElement('label');
 		this.label.classList.add('category__label');
 		this.span = document.createElement('span');
@@ -27,4 +27,5 @@ class FilterProduct {
 		return this.container;
 	}
 }
+
 export default FilterProduct;

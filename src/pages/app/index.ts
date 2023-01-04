@@ -5,7 +5,6 @@ import ErrorPage, { ErrorTypes } from '../error';
 import CartPage from '../cart';
 import Footer from '../../core/components/footer';
 import Main from '../../core/components/main';
-// import { chosenProducts } from '../../utils/helpers';
 
 export const enum PageIds {
   CatalogPage = 'catalog-page',

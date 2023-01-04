@@ -345,6 +345,13 @@ select {
 	gap: 30px;
 }
 
+.main__products_empty {
+	display: flex;
+	font-family: Futura;
+	font-weight: bold;
+	font-size: 50px;
+}
+
 .card {
 	width: 23%;
 	height: 300px;

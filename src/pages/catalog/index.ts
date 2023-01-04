@@ -26,8 +26,8 @@ class CatalogPage extends Page {
 	filteraArrCategory: string[] = [];
 	filteraArrBrand: string[] = [];
 	filterArrSearch: filtredData = [];
-	priceRange: [number, number] = [10, 1749];
-	stockRange: [number, number] = [2, 150];
+	priceRange: [number, number] = [this.data.products.map((el) => el.price).sort((a, b) => a - b)[0], this.data.products.map((el) => el.price).sort((a, b) => b - a)[0]];
+	stockRange: [number, number] = [this.data.products.map((el) => el.stock).sort((a, b) => a - b)[0], this.data.products.map((el) => el.stock).sort((a, b) => b - a)[0]];
 	private cardExemp: CardProduct;
 	private filterCategory: FilterProduct;
 
@@ -40,6 +40,10 @@ class CatalogPage extends Page {
 	createCardsOfProducts(arrFiltredProducts: filtredData, containerForCards = <HTMLElement>this.container.querySelector('.main__products')): void {
 		const countOfProducts = <HTMLElement>this.container.querySelector('.count-of-products');
 		countOfProducts.innerHTML = `Find: ${arrFiltredProducts.length}`;
+		if (arrFiltredProducts.length === 0) {
+			containerForCards.innerHTML = "Nothing found &#129488;"
+			containerForCards.classList.add('main__products_empty')
+		}
 		for (const product of arrFiltredProducts) {
 			this.cardExemp = new CardProduct(`${product.id}`);
 			const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
@@ -182,6 +186,7 @@ class CatalogPage extends Page {
 	}
 
 	render(): HTMLElement {
+
 
 		const layoutCatalog: string = `<main class="main">
 			<article class="background">
@@ -442,8 +447,8 @@ class CatalogPage extends Page {
 			this.filteraArrCategory = [];
 			this.filteraArrBrand = [];
 			this.filterArrSearch = [];
-			this.priceRange = [10, 1749];
-			this.stockRange = [2, 150];
+			this.priceRange = [this.data.products.map((el) => el.price).sort((a, b) => a - b)[0], this.data.products.map((el) => el.price).sort((a, b) => b - a)[0]];
+			this.stockRange = [this.data.products.map((el) => el.stock).sort((a, b) => a - b)[0], this.data.products.map((el) => el.stock).sort((a, b) => b - a)[0]];
 			containerForCards.innerHTML = "";
 			this.createCardsOfProducts(this.data.products)
 		})

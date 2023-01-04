@@ -1,6 +1,6 @@
-import { IProduct } from '../../core/components/data/getsData';
+import { data, IProduct } from '../../core/components/data/getsData';
 import Page from '../../core/templates/page';
-import { getProductsInCart } from '../../utils/helpers';
+import { countProductsInCart, getProductsInCart } from '../../utils/helpers';
 import App, { PageIds } from '../app';
 import './index.css';
 
@@ -10,13 +10,12 @@ class CartPage extends Page {
   };
 
   totalPrice: number[] = [];
-  plusButtons: Element[] = [...document.querySelectorAll('plus-btn')];
 
   constructor(id: string) {
     super(id);
   }
 
-  render() {
+  checkCart() {
     const title = this.createTitle(CartPage.TextObject.CartTitle);
     title.classList.add('cart__title');
 
@@ -54,6 +53,9 @@ class CartPage extends Page {
     if (localStorage.getItem('productsInCart') !== null) {
       App.chosenProducts = JSON.parse(localStorage.getItem('productsInCart') || App.chosenProducts.toString());
 
+      orderInfo.innerHTML = `
+      <h2 class="cart__total">Products: ${countProductsInCart(App.chosenProducts)}</h2>`;
+
       productsContainer.append(containerCards, orderInfo);
       cartPage.append(title, productsContainer, paginationContainer);
       this.pagination();
@@ -61,11 +63,35 @@ class CartPage extends Page {
       cartPage.append(title, emptyCartMsg, backBtn);
     }
     this.container.append(cartPage);
+  }
+
+  render() {
+    this.checkCart();
+    this.incrementProducts();
+
     return this.container;
   }
 
+  incrementProducts() {
+    const plusButtonsCollection = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('plus-btn');
+    const totalAmount = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('cart__total');
+    for (let i = 0; i < plusButtonsCollection.length; i++) {
+      plusButtonsCollection[i].addEventListener('click', (e) => {
+        const plusBtn = <EventTarget>e.target;
+        const plusBtnId = (<HTMLButtonElement>plusBtn).dataset.key;
+        const productAmount = (<ChildNode>(<Node>plusBtn).previousSibling).previousSibling;
+        if (plusBtnId && productAmount) {
+          App.chosenProducts[plusBtnId]++;
+          productAmount.textContent = `${App.chosenProducts[plusBtnId]}`;
+          totalAmount[0].innerText = `Products: ${countProductsInCart(App.chosenProducts)}`;
+          localStorage.setItem('productsInCart', JSON.stringify(App.chosenProducts));
+        }
+      });
+    }
+  }
+
   async pagination() {
-    const data = await getProductsInCart(App.chosenProducts);
+    const data = [...(await getProductsInCart(App.chosenProducts))];
     let currentPage = 1;
     let rows = 3;
     const displayList = (arrData: IProduct[], rowPerPage: number, page: number) => {
@@ -78,7 +104,6 @@ class CartPage extends Page {
       const end = start + rowPerPage;
       const paginatedData = arrData.slice(start, end);
       paginatedData.forEach((elem: IProduct, index: number) => {
-        this.totalPrice.push(elem.price * App.chosenProducts[elem.id]);
         const item = `
             <div class="card__info" data-key=${elem.id}>
               <div class="card__info-container">
@@ -98,13 +123,13 @@ class CartPage extends Page {
                 </div>
                 <h3 class="card__info-title">€${elem.price * App.chosenProducts[elem.id]}</h3>
               </div>
-              <div class="card__info-icon"></div>
             </div>
           `;
         if (cards instanceof HTMLElement) {
           cards.innerHTML += item;
         }
       });
+      this.incrementProducts();
     };
 
     const displayPagination = (arrData: IProduct[], rowPerPage: number) => {

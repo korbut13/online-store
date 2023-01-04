@@ -120,13 +120,6 @@
   color: #474a51;
 }
 
-.card__info-icon {
-  width: 18px;
-  height: 18px;
-  background-image: url('../../assets/icons/close.svg');
-  cursor: pointer;
-}
-
 .card__info-icon:hover {
   transform: scale(1.3);
 }
@@ -135,7 +128,15 @@
   width: 468px;
   height: 460px;
   margin-top: 80px;
-  background-color: #747474;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cart__total {
+  font-family: 'Lovelace';
+  font-size: 24px;
 }
 
 .pagination__btn {

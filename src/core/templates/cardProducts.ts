@@ -1,4 +1,9 @@
-import { chosenProducts } from '../../utils/constants';
+import App from '../../pages/app';
+
+enum ButtonText {
+  ADD_TO_CART = 'ADD TO CART',
+  DROP_FROM_CART = 'DROP FROM CART',
+}
 
 class CardProduct {
   private container: HTMLElement;
@@ -44,11 +49,23 @@ class CardProduct {
   }
   private buttonToCart(): HTMLButtonElement {
     const buttonToCart = <HTMLButtonElement>document.createElement('button');
-    buttonToCart.innerText = 'ADD TO CART';
+    if (App.chosenProducts[this.container.id]) {
+      buttonToCart.innerText = ButtonText.DROP_FROM_CART;
+    } else {
+      buttonToCart.innerText = ButtonText.ADD_TO_CART;
+    }
     buttonToCart.classList.add('card__button');
     buttonToCart.addEventListener('click', () => {
-      chosenProducts.push(this.container.id);
+      if (App.chosenProducts[this.container.id]) {
+        buttonToCart.innerText = ButtonText.ADD_TO_CART;
+        delete App.chosenProducts[this.container.id];
+      } else {
+        App.chosenProducts[this.container.id] = 1;
+        buttonToCart.innerText = ButtonText.DROP_FROM_CART;
+      }
+      localStorage.setItem('productsInCart', JSON.stringify(App.chosenProducts));
     });
+
     return buttonToCart;
   }
   private buttonDetails(): HTMLButtonElement {

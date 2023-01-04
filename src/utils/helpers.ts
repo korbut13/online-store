@@ -9,3 +9,11 @@ export const getProductsInCart = async (cartObj: { [key: string]: number }) => {
   }
   return resultArray;
 };
+
+export const countProductsInCart = (cartObj: { [key: string]: number }) => {
+  let count = 0;
+  for (let product in cartObj) {
+    count += cartObj[product];
+  }
+  return count;
+};

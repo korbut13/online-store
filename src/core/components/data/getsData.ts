@@ -14,7 +14,7 @@ export interface IProduct {
   title: string;
 }
 
-interface DataObject {
+export interface DataObject {
   products: IProduct[];
 }
 

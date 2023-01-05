@@ -50,7 +50,7 @@
 }
 
 .card__info-container {
-  width: 23%;
+  width: 220px;
 }
 
 .card__info-img {
@@ -120,12 +120,8 @@
   color: #474a51;
 }
 
-.card__info-icon:hover {
-  transform: scale(1.3);
-}
-
 .order__info {
-  width: 468px;
+  width: 400px;
   height: 460px;
   margin-top: 80px;
   background-color: #fff;
@@ -135,8 +131,10 @@
 }
 
 .cart__total {
-  font-family: 'Lovelace';
-  font-size: 24px;
+  font-family: 'Futura';
+  font-size: 30px;
+  line-height: 130%;
+  color: #474a51;
 }
 
 .pagination__btn {

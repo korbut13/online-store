@@ -92,31 +92,42 @@ class CatalogPage extends Page {
             return filtredData;
         }
     }
+    rangeComponent(rangeContainer: HTMLElement, min: number, max: number, onChange: (min: number, max: number) => void) {
 
-    rangePriceAndStock(inputOne: HTMLInputElement, inputTwo: HTMLInputElement, min: HTMLParagraphElement, max: HTMLParagraphElement, IStockOne: HTMLInputElement, IStockTwo: HTMLInputElement, minStock: HTMLParagraphElement, maxStock: HTMLParagraphElement) {
-        const minGap: number = 5;
-        const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
-        inputOne.addEventListener('input', () => {
-            if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
-                inputOne.value = `${parseInt(inputTwo.value) - minGap}`
+        const inputs: HTMLCollectionOf<HTMLInputElement> = rangeContainer.getElementsByTagName('input');
+        const inputMin: HTMLInputElement = inputs[0];
+        const inputMax: HTMLInputElement = inputs[1];
+
+        const minMaxValue: NodeListOf<HTMLParagraphElement> = rangeContainer.querySelectorAll('.range-values p');
+        const minText: HTMLParagraphElement = minMaxValue[0];
+        const maxText: HTMLParagraphElement = minMaxValue[2];
+
+        const minGap: number = 0;
+
+        let currentMin: number = min;
+        let currentMax: number = max;
+
+        inputMin.addEventListener('input', () => {
+            currentMin = parseInt(inputMin.value);
+            currentMax = parseInt(inputMax.value);
+            if (currentMax - currentMin <= minGap) {
+                currentMin = currentMax - minGap
+                inputMin.value = `${currentMin}`;
             };
-            min.textContent = inputOne.value;
-            this.priceRange[0] = parseInt(min.textContent);
-            containerForCards.innerHTML = "";
-            const filtredData = this.getNewData();
-            this.createCardsOfProducts(filtredData);
-            this.recalcFoundProducts(filtredData, inputOne, inputTwo, min, max, IStockOne, IStockTwo, minStock, maxStock);
+            minText.textContent = inputMin.value;
+            onChange(currentMin, currentMax);
+
         });
-        inputTwo.addEventListener('input', () => {
-            if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
-                inputTwo.value = `${parseInt(inputOne.value) + minGap}`;
-            }
-            max.textContent = inputTwo.value;
-            this.priceRange[1] = parseInt(max.textContent);
-            containerForCards.innerHTML = "";
-            const filtredData = this.getNewData();
-            this.createCardsOfProducts(filtredData);
-            this.recalcFoundProducts(filtredData, inputOne, inputTwo, min, max, IStockOne, IStockTwo, minStock, maxStock);
+        inputMax.addEventListener('input', () => {
+            currentMin = parseInt(inputMin.value);
+            currentMax = parseInt(inputMax.value);
+            if (currentMax - currentMin <= minGap) {
+                currentMax = currentMin + minGap
+                inputMax.value = `${currentMax}`;
+            };
+
+            maxText.textContent = inputMax.value;
+            onChange(currentMin, currentMax);
         });
     }
 
@@ -125,33 +136,56 @@ class CatalogPage extends Page {
             el.description.toLowerCase().includes(val) || el.discountPercentage.toString().includes(val) || el.price.toString().includes(val.toLowerCase()) || el.rating.toString().includes(val.toLowerCase()));
     }
 
-    recalcFoundProducts(data: IProduct[], inpPriceOne: HTMLInputElement, inpPriceTwo: HTMLInputElement, minPrice: HTMLParagraphElement, maxPrice: HTMLParagraphElement, inpStockOne: HTMLInputElement, inpStockTwo: HTMLInputElement, minStock: HTMLParagraphElement, maxStock: HTMLParagraphElement, spansContainer = <HTMLElement>this.container.querySelector('.filters')) {
-        const spansBrandsAndCategory = spansContainer.getElementsByTagName('span');
-        const minPriceValue = data.map((el) => el.price).sort((a, b) => a - b)[0];
-        const maxPriceValue = data.map((el) => el.price).sort((a, b) => b - a)[0];
-        const minStockValue = data.map((el) => el.stock).sort((a, b) => a - b)[0];
-        const maxStockValue = data.map((el) => el.stock).sort((a, b) => b - a)[0];
+    recalcFoundProducts(data: IProduct[], rangeContainerPrice: HTMLElement, rangeContainerStock: HTMLElement) {
+        const containerAmountFindedFilters = <HTMLElement>this.container.querySelector('.filters')
+        const amountBrandsAndCategory: HTMLCollectionOf<HTMLSpanElement> = containerAmountFindedFilters.getElementsByTagName('span');
+
+        const inputsPrice: HTMLCollectionOf<HTMLInputElement> = rangeContainerPrice.getElementsByTagName('input');
+        const inputMinPrice: HTMLInputElement = inputsPrice[0];
+        const inputMaxPrice: HTMLInputElement = inputsPrice[1];
+
+        const minMaxValuePrice: NodeListOf<HTMLParagraphElement> = rangeContainerPrice.querySelectorAll('.range-values p');
+        const minPriceText: HTMLParagraphElement = minMaxValuePrice[0];
+        const maxPriceText: HTMLParagraphElement = minMaxValuePrice[2];
+
+        const inputsStock: HTMLCollectionOf<HTMLInputElement> = rangeContainerStock.getElementsByTagName('input');
+        const inputMinStock: HTMLInputElement = inputsStock[0];
+        const inputMaxStock: HTMLInputElement = inputsStock[1];
+
+        const minMaxValueStock: NodeListOf<HTMLParagraphElement> = rangeContainerStock.querySelectorAll('.range-values p');
+        const minStockText: HTMLParagraphElement = minMaxValueStock[0];
+        const maxStockText: HTMLParagraphElement = minMaxValueStock[2];
+
+
+        const minPriceValue: number = data.map((el) => el.price).sort((a, b) => a - b)[0];
+        const maxPriceValue: number = data.map((el) => el.price).sort((a, b) => b - a)[0];
+        const minStockValue: number = data.map((el) => el.stock).sort((a, b) => a - b)[0];
+        const maxStockValue: number = data.map((el) => el.stock).sort((a, b) => b - a)[0];
+
         const brandsFinded: string[] = data.map((elem: { brand: string, }) => elem.brand.replace(/ /g, ''));
         const categoryFinded: string[] = data.map((el) => el.category);
-        const categoryAndBrands = brandsFinded.concat(categoryFinded);
+        const categoryAndBrands: string[] = brandsFinded.concat(categoryFinded);
         const objBrandsCategoryFinded: { [key: string]: number } = this.getAmountOfProducts(categoryAndBrands);
         const arrBrandsCategoryFinded = Object.entries(objBrandsCategoryFinded).flat(Infinity);
         const arrStringsBrandsCategoryFinded = arrBrandsCategoryFinded.filter((el) => typeof el === "string");
-        for (const span of spansBrandsAndCategory) {
-            if (arrStringsBrandsCategoryFinded.includes(span.className)) {
-                let index = arrBrandsCategoryFinded.indexOf(span.className);
-                span.innerHTML = `${arrBrandsCategoryFinded[index + 1]}`;
-                inpPriceOne.value = `${minPriceValue}`;
-                inpPriceTwo.value = `${maxPriceValue}`;
-                minPrice.textContent = inpPriceOne.value;
-                maxPrice.textContent = inpPriceTwo.value;
-                inpStockOne.value = `${minStockValue}`;
-                inpStockTwo.value = `${maxStockValue}`;
-                minStock.textContent = inpStockOne.value;
-                maxStock.textContent = inpStockTwo.value;
+
+        for (const amount of amountBrandsAndCategory) {
+            if (arrStringsBrandsCategoryFinded.includes(amount.className)) {
+                const index: number = arrBrandsCategoryFinded.indexOf(amount.className);
+                amount.innerHTML = `${arrBrandsCategoryFinded[index + 1]}`;
+
+                inputMinPrice.value = `${minPriceValue}`;
+                inputMaxPrice.value = `${maxPriceValue}`;
+                minPriceText.textContent = inputMinPrice.value;
+                maxPriceText.textContent = inputMaxPrice.value;
+
+                inputMinStock.value = `${minStockValue}`;
+                inputMaxStock.value = `${maxStockValue}`;
+                minStockText.textContent = inputMinStock.value;
+                maxStockText.textContent = inputMaxStock.value;
             }
             else {
-                span.innerHTML = "0";
+                amount.innerHTML = "0";
             }
         }
     }
@@ -203,7 +237,7 @@ class CatalogPage extends Page {
                     <div class="filters__price">
                         <h3 class="filters__header" > PRICE </h3>
                         <div class="price">
-                            <div class="values_price">
+                            <div class="range-values">
                                 <p class="range-1" > 10 </p>
                                 <p class="dash">&ndash; </p>
                                 <p class="range-2" > 1749 </p>
@@ -218,7 +252,7 @@ class CatalogPage extends Page {
                     <div class="filters__stock">
                         <h3 class="filters__header" > AVAILABLE IN STOCK </h3>
                         <div class="stock">
-                            <div class="values_stock">
+                            <div class="range-values">
                                 <p class="range-1" > 2 </p>
                                 <p class="dash">&ndash; </p>
                                 <p class="range-2" > 150 </p>
@@ -237,6 +271,7 @@ class CatalogPage extends Page {
     </section>
 </main>`
         this.container.innerHTML = layoutCatalog;
+
 
         //_________________________Add cards of products to div main__products
 
@@ -274,7 +309,7 @@ class CatalogPage extends Page {
                 containerForCards.innerHTML = '';
                 const filtredData: IProduct[] = this.getNewData();
                 this.createCardsOfProducts(filtredData, containerForCards);
-                this.recalcFoundProducts(filtredData, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
+                this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock);
 
             })
         }
@@ -291,34 +326,31 @@ class CatalogPage extends Page {
                 containerForCards.innerHTML = '';
                 const filtredData: IProduct[] = this.getNewData();
                 this.createCardsOfProducts(filtredData);
-                this.recalcFoundProducts(filtredData, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
+                this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock);
             })
         }
 
         //_________________________Adding filtering functionality by price
 
-        const containerInputsPrice = <HTMLElement>this.container.querySelector('.price__range');
-        const inputsPrice: HTMLCollectionOf<HTMLInputElement> = containerInputsPrice.getElementsByTagName('input');
-        const inputPriceOne: HTMLInputElement = inputsPrice[0];
-        const inputPriceTwo: HTMLInputElement = inputsPrice[1];
+        const containerInputsPrice = <HTMLElement>this.container.querySelector('.price');
 
-        const containerSpansPrice = <HTMLElement>this.container.querySelector('.values_price');
-        const minMaxPrice: HTMLCollectionOf<HTMLParagraphElement> = containerSpansPrice.getElementsByTagName('p');
-        const minPrice: HTMLParagraphElement = minMaxPrice[0];
-        const maxPrice: HTMLParagraphElement = minMaxPrice[2];
+        const containerInputsStock = <HTMLElement>this.container.querySelector('.stock');
 
-        const containerInputsStock = <HTMLElement>this.container.querySelector('.stock__range');
-        const inputsStock: HTMLCollectionOf<HTMLInputElement> = containerInputsStock.getElementsByTagName('input');
-        const inputStockOne: HTMLInputElement = inputsStock[0];
-        const inputStockTwo: HTMLInputElement = inputsStock[1];
 
-        const containerSpansStock = <HTMLElement>this.container.querySelector('.values_stock');
-        const minMaxStock: HTMLCollectionOf<HTMLParagraphElement> = containerSpansStock.getElementsByTagName('p');
-        const minStock: HTMLParagraphElement = minMaxStock[0];
-        const maxStock: HTMLParagraphElement = minMaxStock[2];
-
-        this.rangePriceAndStock(inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
-        this.rangePriceAndStock(inputStockOne, inputStockTwo, minStock, maxStock, inputPriceOne, inputPriceTwo, minPrice, maxPrice);
+        this.rangeComponent(containerInputsPrice, this.priceRange[0], this.priceRange[1], (min, max) => {
+            containerForCards.innerHTML = "";
+            this.priceRange = [min, max];
+            const filtredData = this.getNewData();
+            this.createCardsOfProducts(filtredData);
+            this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock)
+        });
+        this.rangeComponent(containerInputsStock, this.stockRange[0], this.priceRange[1], (min, max) => {
+            containerForCards.innerHTML = "";
+            this.stockRange = [min, max];
+            const filtredData = this.getNewData();
+            this.createCardsOfProducts(filtredData);
+            this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock)
+        })
 
 
 
@@ -363,14 +395,14 @@ class CatalogPage extends Page {
                 const searchedArrData: IProduct[] = this.searchProduct(filtredData, val)
                 containerForCards.innerHTML = "";
                 this.createCardsOfProducts(searchedArrData);
-                this.recalcFoundProducts(searchedArrData, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
+                this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock)
             }
             else {
                 this.filterArrSearch = [];
                 const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = "";
                 this.createCardsOfProducts(filtredData);
-                this.recalcFoundProducts(filtredData, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
+                this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock)
             }
         })
 
@@ -391,8 +423,8 @@ class CatalogPage extends Page {
             this.filteraArrBrand = [];
             this.filterArrSearch = [];
             containerForCards.innerHTML = "";
-            this.createCardsOfProducts(this.data.products)
-            this.recalcFoundProducts(this.data.products, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
+            this.createCardsOfProducts(this.data.products);
+            this.recalcFoundProducts(this.data.products, containerInputsPrice, containerInputsStock);
         })
         return this.container;
     }

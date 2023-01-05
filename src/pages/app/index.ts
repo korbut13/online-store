@@ -19,6 +19,7 @@ class App {
   private header: Header;
   private footer: Footer;
   static main: Main;
+  static chosenProducts: { [key: string]: number } = {};
 
   static renderNewPage(idPage: string) {
     const currentPageHTML = document.querySelector(`#${App.defaultPageId}`);
@@ -33,7 +34,7 @@ class App {
       window.location.hash.slice(1) === PageIds.CatalogPage
     ) {
       page = new MainPage(idPage);
-    } else if (idPage === PageIds.CartPage) {
+    } else if (idPage === PageIds.CartPage || window.location.hash.slice(1) === PageIds.CartPage) {
       page = new CartPage(idPage);
     } else {
       page = new ErrorPage(idPage, ErrorTypes.Error_404);
@@ -53,6 +54,12 @@ class App {
     });
   }
 
+  private checkCart() {
+    if (localStorage.getItem('productsInCart') !== null) {
+      App.chosenProducts = JSON.parse(localStorage.getItem('productsInCart') || App.chosenProducts.toString());
+    }
+  }
+
   constructor() {
     this.header = new Header('header', 'header');
     App.main = new Main('main', 'main');
@@ -61,6 +68,7 @@ class App {
 
   start() {
     this.enableRouteChange();
+    this.checkCart();
     App.container.append(this.header.render());
     App.container.append(App.main.render());
     App.renderNewPage('/');

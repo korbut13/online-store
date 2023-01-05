@@ -20,14 +20,14 @@ class ErrorPage extends Page {
     const title = this.createTitle(ErrorPage.TextObject[this.errorType]);
     title.classList.add('error__title');
 
-    const errorPage = document.createElement('section');
+    const errorPage = <HTMLElement>document.createElement('section');
     errorPage.classList.add('error__wrapper');
 
-    const errorMsg = document.createElement('p');
+    const errorMsg = <HTMLParagraphElement>document.createElement('p');
     errorMsg.classList.add('error__text');
     errorMsg.innerText = 'Oops! Something went wrong...';
 
-    const backBtn = document.createElement('button');
+    const backBtn = <HTMLButtonElement>document.createElement('button');
     backBtn.classList.add('button', 'back__button');
     backBtn.innerText = 'return to catalog';
     backBtn.addEventListener('click', () => {

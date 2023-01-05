@@ -5,20 +5,6 @@ import { IProduct } from '../../core/components/data/getsData';
 import CardProduct from '../../core/templates/cardProducts';
 import FilterProduct from '../../core/templates/filtersProducts';
 
-type filtredData = {
-    brand: string;
-    category: string;
-    description: string;
-    discountPercentage: number;
-    id: number;
-    images: [string];
-    price: number;
-    rating: number;
-    stock: number;
-    thumbnail: string;
-    title: string;
-}[];
-
 class CatalogPage extends Page {
     static TextObject = {
         MainTitle: 'Catalog Page',
@@ -26,7 +12,7 @@ class CatalogPage extends Page {
     data = data;
     filteraArrCategory: string[] = [];
     filteraArrBrand: string[] = [];
-    filterArrSearch: filtredData = [];
+    filterArrSearch: IProduct[] = [];
     priceRange: [number, number] = [this.data.products.map((el) => el.price).sort((a, b) => a - b)[0], this.data.products.map((el) => el.price).sort((a, b) => b - a)[0]];
     stockRange: [number, number] = [this.data.products.map((el) => el.stock).sort((a, b) => a - b)[0], this.data.products.map((el) => el.stock).sort((a, b) => b - a)[0]];
     private cardExemp: CardProduct;
@@ -38,8 +24,9 @@ class CatalogPage extends Page {
         this.filterCategory = new FilterProduct('categoty__input', 'span__input');
     }
 
-    createCardsOfProducts(arrFiltredProducts: filtredData, containerForCards = <HTMLElement>this.container.querySelector('.main__products')): void {
+    createCardsOfProducts(arrFiltredProducts: IProduct[], containerForCards = <HTMLElement>this.container.querySelector('.main__products')): void {
         const countOfProducts = <HTMLElement>this.container.querySelector('.count-of-products');
+        console.log(countOfProducts)
         countOfProducts.innerHTML = `Find: ${arrFiltredProducts.length}`;
         if (arrFiltredProducts.length === 0) {
             containerForCards.innerHTML = "Nothing found &#129488;"
@@ -106,23 +93,20 @@ class CatalogPage extends Page {
         }
     }
 
-    functionalRangesPrice(inputOne: HTMLInputElement, inputTwo: HTMLInputElement, min: HTMLParagraphElement, max: HTMLParagraphElement, spansBrandsAndCategory: HTMLCollectionOf<HTMLSpanElement>, inputStockOne: HTMLInputElement, inputStockTwo: HTMLInputElement, minStock: HTMLParagraphElement, maxStock: HTMLParagraphElement): void {
-        const minGap: number = 0;
-        const containerForCards = <HTMLElement>this.container.querySelector('.main__products')
-
+    rangePriceAndStock(inputOne: HTMLInputElement, inputTwo: HTMLInputElement, min: HTMLParagraphElement, max: HTMLParagraphElement, IStockOne: HTMLInputElement, IStockTwo: HTMLInputElement, minStock: HTMLParagraphElement, maxStock: HTMLParagraphElement) {
+        const minGap: number = 5;
+        const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
         inputOne.addEventListener('input', () => {
             if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
                 inputOne.value = `${parseInt(inputTwo.value) - minGap}`
-            }
+            };
             min.textContent = inputOne.value;
             this.priceRange[0] = parseInt(min.textContent);
             containerForCards.innerHTML = "";
             const filtredData = this.getNewData();
-            if (filtredData)
-                this.createCardsOfProducts(filtredData);
-            this.countFoundProducts(filtredData, spansBrandsAndCategory, inputOne, inputTwo, min, max, inputStockOne, inputStockTwo, minStock, maxStock)
+            this.createCardsOfProducts(filtredData);
+            this.recalcFoundProducts(filtredData, inputOne, inputTwo, min, max, IStockOne, IStockTwo, minStock, maxStock);
         });
-
         inputTwo.addEventListener('input', () => {
             if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
                 inputTwo.value = `${parseInt(inputOne.value) + minGap}`;
@@ -131,51 +115,18 @@ class CatalogPage extends Page {
             this.priceRange[1] = parseInt(max.textContent);
             containerForCards.innerHTML = "";
             const filtredData = this.getNewData();
-            if (filtredData)
-                this.createCardsOfProducts(filtredData);
-            this.countFoundProducts(filtredData, spansBrandsAndCategory, inputOne, inputTwo, min, max, inputStockOne, inputStockTwo, minStock, maxStock)
-        });
-    }
-
-    functionalRangesStock(inputOne: HTMLInputElement, inputTwo: HTMLInputElement, min: HTMLParagraphElement, max: HTMLParagraphElement, spansBrandsAndCategory: HTMLCollectionOf<HTMLSpanElement>, inputPriceOne: HTMLInputElement, inputPriceTwo: HTMLInputElement, minPrice: HTMLParagraphElement, maxPrice: HTMLParagraphElement): void {
-
-        const minGap = 0;
-        const containerForCards = <HTMLElement>this.container.querySelector('.main__products')
-
-        inputOne.addEventListener('input', () => {
-            if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
-                inputOne.value = `${parseInt(inputTwo.value) - minGap}`
-            }
-            min.textContent = inputOne.value;
-            this.stockRange[0] = parseInt(min.textContent);
-            containerForCards.innerHTML = "";
-            const filtredData = this.getNewData();
-            if (filtredData)
-                this.createCardsOfProducts(filtredData);
-            this.countFoundProducts(filtredData, spansBrandsAndCategory, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputOne, inputTwo, min, max);
-        });
-
-        inputTwo.addEventListener('input', () => {
-            if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
-                inputTwo.value = `${parseInt(inputOne.value) + minGap}`;
-            }
-            max.textContent = inputTwo.value;
-            this.stockRange[1] = parseInt(max.textContent);
-            containerForCards.innerHTML = "";
-            const filtredData = this.getNewData();
-            if (filtredData)
-                this.createCardsOfProducts(filtredData);
-            this.countFoundProducts(filtredData, spansBrandsAndCategory, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputOne, inputTwo, min, max);
+            this.createCardsOfProducts(filtredData);
+            this.recalcFoundProducts(filtredData, inputOne, inputTwo, min, max, IStockOne, IStockTwo, minStock, maxStock);
         });
     }
 
     searchProduct(arr: IProduct[], val: string): IProduct[] {
         return arr.filter((el) => el.title.toLowerCase().includes(val.toLowerCase()) || el.brand.toLowerCase().includes(val.toLowerCase()) || el.category.toLowerCase().includes(val.toLowerCase()) ||
-            el.description.toLowerCase().includes(val) || el.discountPercentage.toString().includes(val) || el.id.toString().includes(val) ||
-            el.price.toString().includes(val.toLowerCase()) || el.rating.toString().includes(val.toLowerCase()));
+            el.description.toLowerCase().includes(val) || el.discountPercentage.toString().includes(val) || el.price.toString().includes(val.toLowerCase()) || el.rating.toString().includes(val.toLowerCase()));
     }
 
-    countFoundProducts(data: filtredData, spansBrandsAndCategory: HTMLCollectionOf<HTMLSpanElement>, inpPriceOne: HTMLInputElement, inpPriceTwo: HTMLInputElement, minPrice: HTMLParagraphElement, maxPrice: HTMLParagraphElement, inpStockOne: HTMLInputElement, inpStockTwo: HTMLInputElement, minStock: HTMLParagraphElement, maxStock: HTMLParagraphElement) {
+    recalcFoundProducts(data: IProduct[], inpPriceOne: HTMLInputElement, inpPriceTwo: HTMLInputElement, minPrice: HTMLParagraphElement, maxPrice: HTMLParagraphElement, inpStockOne: HTMLInputElement, inpStockTwo: HTMLInputElement, minStock: HTMLParagraphElement, maxStock: HTMLParagraphElement, spansContainer = <HTMLElement>this.container.querySelector('.filters')) {
+        const spansBrandsAndCategory = spansContainer.getElementsByTagName('span');
         const minPriceValue = data.map((el) => el.price).sort((a, b) => a - b)[0];
         const maxPriceValue = data.map((el) => el.price).sort((a, b) => b - a)[0];
         const minStockValue = data.map((el) => el.stock).sort((a, b) => a - b)[0];
@@ -206,87 +157,85 @@ class CatalogPage extends Page {
     }
 
     render(): HTMLElement {
-
         const layoutCatalog: string = `<main class="main">
-            <article class="background" >
-                <div class="background__img_top" > </div>
-                    < div class="background__img_info" >
-                        <p class="background__text" > WINTER 2023 < /p>
-                            < button class="background__buttom" > TO CATALOG < /button>
-                                < /div>
-                                < div class="background__img_left" > </div>
-                                    < div class="background__img_right" > </div>
-                                        < /article>
+    <article class="background">
+        <div class="background__img_top" > </div>
+            <div class="background__img_info">
+                <p class="background__text" > WINTER 2023 </p>
+                <button class="background__buttom" > TO CATALOG </button>
+            </div>
+            <div class="background__img_left" > </div>
+            <div class="background__img_right" > </div>
+    </article>
 
-                                        < p class="main__header" id = "catalog" > CATALOG < /p>
+    <p class="main__header" id = "catalog" > CATALOG </p>
 
-                                            < section class="products" >
-                                                <div class="container" >
-                                                    <div class="sort-search" >
-                                                        <div class="reset-total" >
-                                                            <button class="reset-total__clear-filters" > Reset filters < /button>
-                                                                < button class="reset-total__copy-link" > Copy link < /button>
-                                                                    < /div>
-                                                                    < div class="sort-of-products" >
-                                                                        <label for= "sort-of-products" > Sort options: </label>
-                                                                            < select name = "products" id = "sort-of-products" class="sort-of-products-select" >
-                                                                                <option value="" > --Sort options: --< /option>
-                                                                                    < option value = "price-ASC" > Sort by price ASC < /option>
-                                                                                        < option value = "price-DESC" > Sort by price DESC < /option>
-                                                                                            < option value = "rating-ASC" > Sort by rating ASC < /option>
-                                                                                                < option value = "rating-DESC" > Sort by rating DESC < /option>
-                                                                                                    < /select>
-                                                                                                    < /div>
-                                                                                                    < div class="count-of-products" > </div>
-                                                                                                        < div class="search" >
-                                                                                                            <input type="search" class="search-of-products" placeholder = "Search product" >
-                                                                                                                </div>
-                                                                                                                < /div>
-                                                                                                                < div class="products__wrapper" >
-                                                                                                                    <div class="filters" >
-                                                                                                                        <div class="filters__category" >
-                                                                                                                            <h3 id="filters__category_header" class="filters__header" > CATEGORIES < /h3>
-                                                                                                                                < /div>
-                                                                                                                                < div class="filters__brand" >
-                                                                                                                                    <h3 class="filters__header" > BRANDS < /h3>
-                                                                                                                                        < /div>
-                                                                                                                                        < div class="filters__price" >
-                                                                                                                                            <h3 class="filters__header" > PRICE < /h3>
-                                                                                                                                                < div class="price" >
-                                                                                                                                                    <div class="values_price" >
-                                                                                                                                                        <p class="range-1" > 10 < /p>
-                                                                                                                                                            < p class="dash" >& ndash; </p>
-                                                                                                                                                                < p class="range-2" > 1749 < /p>
-                                                                                                                                                                    < /div>
-                                                                                                                                                                    < div class="price__range" >
-                                                                                                                                                                        <div class="slider-track" > </div>
-                                                                                                                                                                            < input type = "range" class="slider-1" value = "0" min = "10" max = "1749" >
-                                                                                                                                                                                <input type="range" class="slider-2" value = "1749" min = "10" max = "1749" >
-                                                                                                                                                                                    </div>
-                                                                                                                                                                                    < /div>
-                                                                                                                                                                                    < /div>
-                                                                                                                                                                                    < div class="filters__stock" >
-                                                                                                                                                                                        <h3 class="filters__header" > AVAILABLE IN STOCK < /h3>
-                                                                                                                                                                                            < div class="stock" >
-                                                                                                                                                                                                <div class="values_stock" >
-                                                                                                                                                                                                    <p class="range-1" > 2 < /p>
-                                                                                                                                                                                                        < p class="dash" >& ndash; </p>
-                                                                                                                                                                                                            < p class="range-2" > 150 < /p>
-                                                                                                                                                                                                                < /div>
-                                                                                                                                                                                                                < div class="stock__range" >
-                                                                                                                                                                                                                    <div class="slider-track" > </div>
-                                                                                                                                                                                                                        < input type = "range" class="slider-1" value = "0" min = "2" max = "150" >
-                                                                                                                                                                                                                            <input type="range" class="slider-2" value = "150" min = "2" max = "150" >
-                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                < /div>
-                                                                                                                                                                                                                                < /div>
-                                                                                                                                                                                                                                < /div>
-                                                                                                                                                                                                                                < div class="main__products" > </div>
-                                                                                                                                                                                                                                    < /div>
-                                                                                                                                                                                                                                    < /div>
-                                                                                                                                                                                                                                    < /section>
-
-                                                                                                                                                                                                                                    < /main>`
+    <section class="products">
+        <div class="container">
+            <div class="sort-search">
+                <div class="reset-total">
+                    <button class="reset-total__clear-filters" > Reset filters </button>
+                    <button class="reset-total__copy-link" > Copy link </button>
+                </div>
+                <div class="sort-of-products">
+                    <label for= "sort-of-products" > Sort options: </label>
+                    <select name = "products" id = "sort-of-products" class="sort-of-products-select">
+                        <option value="" > --Sort options: --</option>
+                            <option value = "price-ASC" > Sort by price ASC </option>
+                            <option value = "price-DESC" > Sort by price DESC </option>
+                            <option value = "rating-ASC" > Sort by rating ASC </option>
+                            <option value = "rating-DESC" > Sort by rating DESC </option>
+                    </select>
+                </div>
+                <div class="count-of-products" ></div>
+                <div class="search">
+                    <input type="search" class="search-of-products" placeholder = "Search product">
+                </div>
+            </div>
+            <div class="products__wrapper">
+                <div class="filters">
+                    <div class="filters__category">
+                        <h3 id="filters__category_header" class="filters__header" > CATEGORIES </h3>
+                    </div>
+                    <div class="filters__brand">
+                        <h3 class="filters__header"> BRANDS </h3>
+                    </div>
+                    <div class="filters__price">
+                        <h3 class="filters__header" > PRICE </h3>
+                        <div class="price">
+                            <div class="values_price">
+                                <p class="range-1" > 10 </p>
+                                <p class="dash">&ndash; </p>
+                                <p class="range-2" > 1749 </p>
+                            </div>
+                            <div class="price__range">
+                                <div class="slider-track"> </div>
+                                <input type = "range" class="slider-1" value = "0" min = "10" max = "1749">
+                                <input type="range" class="slider-2" value = "1749" min = "10" max = "1749">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filters__stock">
+                        <h3 class="filters__header" > AVAILABLE IN STOCK </h3>
+                        <div class="stock">
+                            <div class="values_stock">
+                                <p class="range-1" > 2 </p>
+                                <p class="dash">&ndash; </p>
+                                <p class="range-2" > 150 </p>
+                            </div>
+                            <div class="stock__range">
+                                <div class="slider-track"></div>
+                                <input type = "range" class="slider-1" value = "0" min = "2" max = "150">
+                                <input type="range" class="slider-2" value = "150" min = "2" max = "150">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="main__products" > </div>
+            </div>
+        </div>
+    </section>
+</main>`
         this.container.innerHTML = layoutCatalog;
 
         //_________________________Add cards of products to div main__products
@@ -314,12 +263,6 @@ class CatalogPage extends Page {
         const filterCategory: HTMLCollectionOf<Element> = this.container.getElementsByClassName('category__input');
         const filterBrand: HTMLCollectionOf<Element> = this.container.getElementsByClassName('brand__input');
 
-        const spansContainer = <HTMLElement>this.container.querySelector('.filters');
-        const spansBrandsAndCategory = spansContainer.getElementsByTagName('span');
-        console.log(spansBrandsAndCategory)
-
-
-
         for (const el of filterCategory) {
             el.addEventListener('click', () => {
                 const checked = (<HTMLInputElement>el).checked;
@@ -329,9 +272,9 @@ class CatalogPage extends Page {
                     this.setFilters((<HTMLInputElement>el).value, this.filteraArrCategory);
                 }
                 containerForCards.innerHTML = '';
-                const filtredData: filtredData = this.getNewData();
+                const filtredData: IProduct[] = this.getNewData();
                 this.createCardsOfProducts(filtredData, containerForCards);
-                this.countFoundProducts(filtredData, spansBrandsAndCategory, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
+                this.recalcFoundProducts(filtredData, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
 
             })
         }
@@ -346,9 +289,9 @@ class CatalogPage extends Page {
                     this.setFilters((<HTMLInputElement>el).value, this.filteraArrBrand);
                 }
                 containerForCards.innerHTML = '';
-                const filtredData: filtredData = this.getNewData();
+                const filtredData: IProduct[] = this.getNewData();
                 this.createCardsOfProducts(filtredData);
-                this.countFoundProducts(filtredData, spansBrandsAndCategory, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
+                this.recalcFoundProducts(filtredData, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
             })
         }
 
@@ -374,11 +317,10 @@ class CatalogPage extends Page {
         const minStock: HTMLParagraphElement = minMaxStock[0];
         const maxStock: HTMLParagraphElement = minMaxStock[2];
 
-        this.functionalRangesPrice(inputPriceOne, inputPriceTwo, minPrice, maxPrice, spansBrandsAndCategory, inputStockOne, inputStockTwo, minStock, maxStock);
+        this.rangePriceAndStock(inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
+        this.rangePriceAndStock(inputStockOne, inputStockTwo, minStock, maxStock, inputPriceOne, inputPriceTwo, minPrice, maxPrice);
 
-        //_________________________Adding filtering functionality by stock
 
-        this.functionalRangesStock(inputStockOne, inputStockTwo, minStock, maxStock, spansBrandsAndCategory, inputPriceOne, inputPriceTwo, minPrice, maxPrice);
 
         //_______________________Adding filtering functionality by sort
 
@@ -387,22 +329,22 @@ class CatalogPage extends Page {
             const selectedValue: string = (<HTMLInputElement>event.target).value;
 
             if (selectedValue === "price-ASC") {
-                const filtredData: filtredData = this.getNewData();
+                const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => a.price - b.price));
             }
             if (selectedValue === "price-DESC") {
-                const filtredData: filtredData = this.getNewData();
+                const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => b.price - a.price));
             }
             if (selectedValue === "rating-ASC") {
-                const filtredData: filtredData = this.getNewData();
+                const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => a.rating - b.rating));
             }
             if (selectedValue === "rating-DESC") {
-                const filtredData: filtredData = this.getNewData();
+                const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => b.rating - a.rating));
             }
@@ -417,16 +359,18 @@ class CatalogPage extends Page {
             let val: string = inputSearch.value.trim();
             if (val !== "") {
                 this.filterArrSearch = this.searchProduct(this.data.products, val);
-                const filtredData: filtredData = this.getNewData();
-                const searchedArrData: filtredData = this.searchProduct(filtredData, val)
+                const filtredData: IProduct[] = this.getNewData();
+                const searchedArrData: IProduct[] = this.searchProduct(filtredData, val)
                 containerForCards.innerHTML = "";
                 this.createCardsOfProducts(searchedArrData);
+                this.recalcFoundProducts(searchedArrData, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
             }
             else {
                 this.filterArrSearch = [];
-                const filtredData: filtredData = this.getNewData();
+                const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = "";
                 this.createCardsOfProducts(filtredData);
+                this.recalcFoundProducts(filtredData, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
             }
         })
 
@@ -448,7 +392,7 @@ class CatalogPage extends Page {
             this.filterArrSearch = [];
             containerForCards.innerHTML = "";
             this.createCardsOfProducts(this.data.products)
-            this.countFoundProducts(this.data.products, spansBrandsAndCategory, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
+            this.recalcFoundProducts(this.data.products, inputPriceOne, inputPriceTwo, minPrice, maxPrice, inputStockOne, inputStockTwo, minStock, maxStock);
         })
         return this.container;
     }

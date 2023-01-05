@@ -9,6 +9,7 @@ class CartPage extends Page {
     CartTitle: 'Cart Page',
   };
 
+  static allProducts = data;
   totalPrice: number[] = [];
 
   constructor(id: string) {
@@ -54,7 +55,8 @@ class CartPage extends Page {
       App.chosenProducts = JSON.parse(localStorage.getItem('productsInCart') || App.chosenProducts.toString());
 
       orderInfo.innerHTML = `
-      <h2 class="cart__total">Products: ${countProductsInCart(App.chosenProducts)}</h2>`;
+      <h2 class="cart__total">Products: ${countProductsInCart(App.chosenProducts)}</h2>
+      <h2 class="cart__total cart__total-price">Total: €${countProductsInCart(App.chosenProducts)}</h2>`;
 
       productsContainer.append(containerCards, orderInfo);
       cartPage.append(title, productsContainer, paginationContainer);
@@ -67,7 +69,6 @@ class CartPage extends Page {
 
   render() {
     this.checkCart();
-    this.incrementProducts();
 
     return this.container;
   }
@@ -78,14 +79,48 @@ class CartPage extends Page {
     for (let i = 0; i < plusButtonsCollection.length; i++) {
       plusButtonsCollection[i].addEventListener('click', (e) => {
         const plusBtn = <EventTarget>e.target;
-        const plusBtnId = (<HTMLButtonElement>plusBtn).dataset.key;
+        const plusBtnId = `${(<HTMLButtonElement>plusBtn).dataset.key}`;
         const productAmount = (<ChildNode>(<Node>plusBtn).previousSibling).previousSibling;
+        const productPriceTotal = (<HTMLElement>(<ChildNode>(<Node>plusBtn).parentElement)).nextElementSibling;
         if (plusBtnId && productAmount) {
           App.chosenProducts[plusBtnId]++;
           productAmount.textContent = `${App.chosenProducts[plusBtnId]}`;
           totalAmount[0].innerText = `Products: ${countProductsInCart(App.chosenProducts)}`;
+          const productPrice = CartPage.allProducts.products[+plusBtnId].price;
+          (<HTMLElement>productPriceTotal).innerText = `€${productPrice * App.chosenProducts[plusBtnId]}`;
           localStorage.setItem('productsInCart', JSON.stringify(App.chosenProducts));
         }
+        this.showTotalPrice();
+      });
+    }
+  }
+
+  decrementProducts() {
+    const minusButtonsCollection = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('minus-btn');
+    const totalAmount = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('cart__total');
+    for (let i = 0; i < minusButtonsCollection.length; i++) {
+      minusButtonsCollection[i].addEventListener('click', (e) => {
+        const minusBtn = <EventTarget>e.target;
+        const minusBtnId = (<HTMLButtonElement>minusBtn).dataset.key;
+        const productAmount = (<ChildNode>(<Node>minusBtn).nextSibling).nextSibling;
+        const productPriceTotal = (<HTMLElement>(<ChildNode>(<Node>minusBtn).parentElement)).nextElementSibling;
+        if (minusBtnId && productAmount) {
+          if (App.chosenProducts[minusBtnId] < 2) {
+            delete App.chosenProducts[minusBtnId];
+            localStorage.setItem('productsInCart', JSON.stringify(App.chosenProducts));
+            (<HTMLElement>document.getElementsByClassName('cards__container').item(0)).innerHTML = '';
+            (<HTMLElement>document.querySelector('.pagination__controls')).innerHTML = '';
+            this.pagination();
+          } else {
+            App.chosenProducts[minusBtnId]--;
+            const productPrice = CartPage.allProducts.products[+minusBtnId].price;
+            productAmount.textContent = `${App.chosenProducts[minusBtnId]}`;
+            (<HTMLElement>productPriceTotal).innerText = `€${productPrice * App.chosenProducts[minusBtnId]}`;
+            totalAmount[0].innerText = `Products: ${countProductsInCart(App.chosenProducts)}`;
+            localStorage.setItem('productsInCart', JSON.stringify(App.chosenProducts));
+          }
+        }
+        this.showTotalPrice();
       });
     }
   }
@@ -117,11 +152,11 @@ class CartPage extends Page {
               <div class="card__info-controls">
                 <p class="card__info-desc">Stock: ${elem.stock}</p>
                 <div class="controls__info">
-                  <button class='controls__info-btn minus-btn'>-</button>
+                  <button class='controls__info-btn minus-btn' data-key=${elem.id}>-</button>
                   <p class="card__info-quantity">${App.chosenProducts[elem.id]}</p>
                   <button class='controls__info-btn plus-btn' data-key=${elem.id}>+</button>
                 </div>
-                <h3 class="card__info-title">€${elem.price * App.chosenProducts[elem.id]}</h3>
+                <h3 class="card__info-title" id="product-price">€${elem.price * App.chosenProducts[elem.id]}</h3>
               </div>
             </div>
           `;
@@ -130,6 +165,7 @@ class CartPage extends Page {
         }
       });
       this.incrementProducts();
+      this.decrementProducts();
     };
 
     const displayPagination = (arrData: IProduct[], rowPerPage: number) => {
@@ -158,7 +194,24 @@ class CartPage extends Page {
 
     displayList(data, rows, currentPage);
     displayPagination(data, rows);
+    this.showTotalPrice();
   }
+
+  showTotalPrice() {
+    const totalPrices = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('cart__total-price');
+    const productsIds = Object.keys(App.chosenProducts);
+    const productsCount = Object.values(App.chosenProducts);
+    const productsPrices: number[] = [];
+    productsIds.forEach((product) => {
+      productsPrices.push(CartPage.allProducts.products[+product].price);
+    });
+    this.totalPrice = Array.apply(0, Array(productsCount.length)).map(
+      (item, index) => productsCount[index] * productsPrices[index]
+    );
+    totalPrices[0].innerText = `Total: €${this.totalPrice.reduce((acc, val) => acc + val, 0)}`;
+  }
+
+  calculateProductPrice() {}
 }
 
 export default CartPage;

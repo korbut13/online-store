@@ -1,6 +1,7 @@
 import Page from '../../core/templates/page';
 import './style.css';
-import DataObject, { data } from '../../core/components/data/getsData';
+import { DataObject, data } from '../../core/components/data/getsData';
+import { IProduct } from '../../core/components/data/getsData';
 import CardProduct from '../../core/templates/cardProducts';
 import FilterProduct from '../../core/templates/filtersProducts';
 
@@ -14,7 +15,7 @@ type filtredData = {
     price: number;
     rating: number;
     stock: number;
-    thumbnaill: string;
+    thumbnail: string;
     title: string;
 }[];
 
@@ -88,16 +89,16 @@ class CatalogPage extends Page {
         }
     }
 
-    getNewData(): filtredData {
+    getNewData(): IProduct[] {
         if (this.filterArrSearch.length === 0) {
-            let filtredData: filtredData = this.data.products.filter(el => this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category));
+            let filtredData: IProduct[] = this.data.products.filter(el => this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category));
             filtredData = filtredData.filter(el => this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand));
             filtredData = filtredData.filter(el => el.stock >= this.stockRange[0] && el.stock <= this.stockRange[1]);
             filtredData = filtredData.filter(el => el.price >= this.priceRange[0] && el.price <= this.priceRange[1]);
             return filtredData;
         }
         else {
-            let filtredData: filtredData = this.filterArrSearch.filter(el => this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category));
+            let filtredData: IProduct[] = this.filterArrSearch.filter(el => this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category));
             filtredData = filtredData.filter(el => this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand));
             filtredData = filtredData.filter(el => el.stock >= this.stockRange[0] && el.stock <= this.stockRange[1]);
             filtredData = filtredData.filter(el => el.price >= this.priceRange[0] && el.price <= this.priceRange[1]);
@@ -168,7 +169,7 @@ class CatalogPage extends Page {
         });
     }
 
-    searchProduct(arr: filtredData, val: string): filtredData {
+    searchProduct(arr: IProduct[], val: string): IProduct[] {
         return arr.filter((el) => el.title.toLowerCase().includes(val.toLowerCase()) || el.brand.toLowerCase().includes(val.toLowerCase()) || el.category.toLowerCase().includes(val.toLowerCase()) ||
             el.description.toLowerCase().includes(val) || el.discountPercentage.toString().includes(val) || el.id.toString().includes(val) ||
             el.price.toString().includes(val.toLowerCase()) || el.rating.toString().includes(val.toLowerCase()));
@@ -206,87 +207,86 @@ class CatalogPage extends Page {
 
     render(): HTMLElement {
 
-
         const layoutCatalog: string = `<main class="main">
-			<article class="background">
-				<div class="background__img_top"></div>
-				<div class="background__img_info">
-					<p class="background__text">WINTER 2023</p>
-					<button class="background__buttom">TO CATALOG</button>
-				</div>
-				<div class="background__img_left"></div>
-				<div class="background__img_right"></div>
-			</article>
+            <article class="background" >
+                <div class="background__img_top" > </div>
+                    < div class="background__img_info" >
+                        <p class="background__text" > WINTER 2023 < /p>
+                            < button class="background__buttom" > TO CATALOG < /button>
+                                < /div>
+                                < div class="background__img_left" > </div>
+                                    < div class="background__img_right" > </div>
+                                        < /article>
 
-			<p class="main__header" id="catalog">CATALOG</p>
+                                        < p class="main__header" id = "catalog" > CATALOG < /p>
 
-			<section class="products">
-				<div class="container">
-				  <div class="sort-search">
-					  <div class="reset-total">
-						  <button class="reset-total__clear-filters">Reset filters</button>
-						  <button class="reset-total__copy-link">Copy link</button>
-					  </div>
-					  <div class="sort-of-products">
-						  <label for="sort-of-products">Sort options:</label>
-						  <select name="products" id="sort-of-products" class="sort-of-products-select">
-						    <option value="">--Sort options:--</option>
-							  <option value="price-ASC">Sort by price ASC</option>
-							  <option value="price-DESC">Sort by price DESC</option>
-							  <option value="rating-ASC">Sort by rating ASC</option>
-							  <option value="rating-DESC">Sort by rating DESC</option>
-						  </select>
-					  </div>
-					  <div class="count-of-products"></div>
-					  <div class="search">
-						  <input type="search" class="search-of-products" placeholder="Search product">
-					  </div>
-				  </div>
-					<div class="products__wrapper">
-						<div class="filters">
-							<div class="filters__category">
-								<h3 id="filters__category_header" class="filters__header">CATEGORIES</h3>
-							</div>
-							<div class="filters__brand">
-								<h3 class="filters__header">BRANDS</h3>
-							</div>
-							<div class="filters__price">
-								<h3 class="filters__header">PRICE</h3>
-								<div class="price">
-									<div class="values_price">
-										<p class="range-1">10</p>
-										<p class="dash">&ndash;</p>
-										<p class="range-2">1749</p>
-									</div>
-									<div class="price__range">
-										<div class="slider-track"></div>
-										<input type="range" class="slider-1" value="0" min="10" max="1749">
-										<input type="range" class="slider-2" value="1749" min="10" max="1749">
-									</div>
-							</div>
-							</div>
-							<div class="filters__stock">
-								<h3 class="filters__header">AVAILABLE IN STOCK</h3>
-								<div class="stock">
-									<div class="values_stock">
-										<p class="range-1">2</p>
-										<p class="dash">&ndash;</p>
-										<p class="range-2">150</p>
-									</div>
-									<div class="stock__range">
-										<div class="slider-track"></div>
-										<input type="range" class="slider-1" value="0" min="2" max="150">
-										<input type="range" class="slider-2" value="150" min="2" max="150">
-									</div>
-							  </div>
-							</div>
-						</div>
-						<div class="main__products"></div>
-					</div>
-				</div>
-			</section>
+                                            < section class="products" >
+                                                <div class="container" >
+                                                    <div class="sort-search" >
+                                                        <div class="reset-total" >
+                                                            <button class="reset-total__clear-filters" > Reset filters < /button>
+                                                                < button class="reset-total__copy-link" > Copy link < /button>
+                                                                    < /div>
+                                                                    < div class="sort-of-products" >
+                                                                        <label for= "sort-of-products" > Sort options: </label>
+                                                                            < select name = "products" id = "sort-of-products" class="sort-of-products-select" >
+                                                                                <option value="" > --Sort options: --< /option>
+                                                                                    < option value = "price-ASC" > Sort by price ASC < /option>
+                                                                                        < option value = "price-DESC" > Sort by price DESC < /option>
+                                                                                            < option value = "rating-ASC" > Sort by rating ASC < /option>
+                                                                                                < option value = "rating-DESC" > Sort by rating DESC < /option>
+                                                                                                    < /select>
+                                                                                                    < /div>
+                                                                                                    < div class="count-of-products" > </div>
+                                                                                                        < div class="search" >
+                                                                                                            <input type="search" class="search-of-products" placeholder = "Search product" >
+                                                                                                                </div>
+                                                                                                                < /div>
+                                                                                                                < div class="products__wrapper" >
+                                                                                                                    <div class="filters" >
+                                                                                                                        <div class="filters__category" >
+                                                                                                                            <h3 id="filters__category_header" class="filters__header" > CATEGORIES < /h3>
+                                                                                                                                < /div>
+                                                                                                                                < div class="filters__brand" >
+                                                                                                                                    <h3 class="filters__header" > BRANDS < /h3>
+                                                                                                                                        < /div>
+                                                                                                                                        < div class="filters__price" >
+                                                                                                                                            <h3 class="filters__header" > PRICE < /h3>
+                                                                                                                                                < div class="price" >
+                                                                                                                                                    <div class="values_price" >
+                                                                                                                                                        <p class="range-1" > 10 < /p>
+                                                                                                                                                            < p class="dash" >& ndash; </p>
+                                                                                                                                                                < p class="range-2" > 1749 < /p>
+                                                                                                                                                                    < /div>
+                                                                                                                                                                    < div class="price__range" >
+                                                                                                                                                                        <div class="slider-track" > </div>
+                                                                                                                                                                            < input type = "range" class="slider-1" value = "0" min = "10" max = "1749" >
+                                                                                                                                                                                <input type="range" class="slider-2" value = "1749" min = "10" max = "1749" >
+                                                                                                                                                                                    </div>
+                                                                                                                                                                                    < /div>
+                                                                                                                                                                                    < /div>
+                                                                                                                                                                                    < div class="filters__stock" >
+                                                                                                                                                                                        <h3 class="filters__header" > AVAILABLE IN STOCK < /h3>
+                                                                                                                                                                                            < div class="stock" >
+                                                                                                                                                                                                <div class="values_stock" >
+                                                                                                                                                                                                    <p class="range-1" > 2 < /p>
+                                                                                                                                                                                                        < p class="dash" >& ndash; </p>
+                                                                                                                                                                                                            < p class="range-2" > 150 < /p>
+                                                                                                                                                                                                                < /div>
+                                                                                                                                                                                                                < div class="stock__range" >
+                                                                                                                                                                                                                    <div class="slider-track" > </div>
+                                                                                                                                                                                                                        < input type = "range" class="slider-1" value = "0" min = "2" max = "150" >
+                                                                                                                                                                                                                            <input type="range" class="slider-2" value = "150" min = "2" max = "150" >
+                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                < /div>
+                                                                                                                                                                                                                                < /div>
+                                                                                                                                                                                                                                < /div>
+                                                                                                                                                                                                                                < div class="main__products" > </div>
+                                                                                                                                                                                                                                    < /div>
+                                                                                                                                                                                                                                    < /div>
+                                                                                                                                                                                                                                    < /section>
 
-		</main>`
+                                                                                                                                                                                                                                    < /main>`
         this.container.innerHTML = layoutCatalog;
 
         //_________________________Add cards of products to div main__products

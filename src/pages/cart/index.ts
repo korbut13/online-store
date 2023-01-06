@@ -201,6 +201,7 @@ class CartPage extends Page {
     displayList(data, rows, currentPage);
     displayPagination(data, rows);
     this.showTotalPrice();
+    this.applyDiscount();
   }
 
   showTotalPrice(): void {
@@ -215,6 +216,48 @@ class CartPage extends Page {
       (item, index) => productsCount[index] * productsPrices[index]
     );
     totalPrices[0].innerText = `Total: €${this.totalPrice.reduce((acc, val) => acc + val, 0)}`;
+  }
+
+  applyDiscount(): void {
+    const oldTotalPrice = <HTMLElement>document.getElementById('total');
+    const totalPriceWithDiscount = <HTMLElement>document.getElementById('promo-total');
+    const discount = <HTMLInputElement>document.getElementById('promo');
+    const totalProductsPrice = this.totalPrice.reduce((acc, val) => acc + val, 0);
+    discount.addEventListener('input', (e) => {
+      if (discount.value === 'rs'.toLowerCase()) {
+        this.createAppliedPromo('rs');
+        oldTotalPrice.classList.add('old');
+        totalPriceWithDiscount.classList.add('new');
+        totalPriceWithDiscount.innerText = `Total: €${(totalProductsPrice * 0.9).toFixed(0)}`;
+      } else if (discount.value === 'shop'.toLowerCase()) {
+        this.createAppliedPromo('shop');
+        oldTotalPrice.classList.add('old');
+        totalPriceWithDiscount.classList.add('new');
+        totalPriceWithDiscount.innerText = `Total: €${(totalProductsPrice * 0.9).toFixed(0)}`;
+      } else if (!discount.value) {
+        const dropBtn = <HTMLElement>document.getElementById('rs-drop-btn');
+        dropBtn.addEventListener('click', (e) => {
+          oldTotalPrice.classList.remove('old');
+          totalPriceWithDiscount.classList.remove('new');
+          (<HTMLElement>document.getElementsByClassName('applied-promo__container')[0]).remove();
+        });
+      }
+    });
+  }
+
+  createAppliedPromo(promoValue: string): void {
+    const appliedPromoContainer = <HTMLElement>document.createElement('div');
+    appliedPromoContainer.classList.add('applied-promo__container');
+    const fullPromoName = promoValue === 'rs' ? 'Rolling Scopes School' : 'Online Shop';
+    const discount = '10%';
+
+    const promoContainer = <HTMLElement>document.getElementById('promo__container');
+    appliedPromoContainer.innerHTML = `<h3 class='applied-promo__title'>Applied codes</h3
+    <div class='applied-promo__details'>
+      <p class="applied-promo__text">${fullPromoName} - ${discount}</p>
+      <button class='applied-promo__btn' id='rs-drop-btn'>Drop</button>
+    </div>`;
+    promoContainer.insertAdjacentElement('beforebegin', appliedPromoContainer);
   }
 }
 

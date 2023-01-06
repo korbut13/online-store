@@ -16,7 +16,7 @@ class CartPage extends Page {
     super(id);
   }
 
-  checkCart() {
+  checkCart(): void {
     const title = this.createTitle(CartPage.TextObject.CartTitle);
     title.classList.add('cart__title');
 
@@ -56,7 +56,13 @@ class CartPage extends Page {
 
       orderInfo.innerHTML = `
       <h2 class="cart__total">Products: ${countProductsInCart(App.chosenProducts)}</h2>
-      <h2 class="cart__total cart__total-price">Total: €${countProductsInCart(App.chosenProducts)}</h2>`;
+      <h2 class="cart__total cart__total-price" id='total'>Total: €</h2>
+      <h2 class="cart__total cart__promo-price" id='promo-total'>Total: €100</h2>
+      <div class="promo__container" id="promo__container">
+        <input class="promo__container-input" id="promo" type="search" placeholder="Enter promo code">
+        <span class="promo__container-info">Promo for test 'rs'</span>
+       </div>
+      <button class="cart__button">BUY NOW</button>`;
 
       productsContainer.append(containerCards, orderInfo);
       cartPage.append(title, productsContainer, paginationContainer);
@@ -67,13 +73,13 @@ class CartPage extends Page {
     this.container.append(cartPage);
   }
 
-  render() {
+  render(): HTMLElement {
     this.checkCart();
 
     return this.container;
   }
 
-  incrementProducts() {
+  incrementProducts(): void {
     const plusButtonsCollection = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('plus-btn');
     const totalAmount = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('cart__total');
     for (let i = 0; i < plusButtonsCollection.length; i++) {
@@ -95,7 +101,7 @@ class CartPage extends Page {
     }
   }
 
-  decrementProducts() {
+  decrementProducts(): void {
     const minusButtonsCollection = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('minus-btn');
     const totalAmount = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('cart__total');
     for (let i = 0; i < minusButtonsCollection.length; i++) {
@@ -105,19 +111,19 @@ class CartPage extends Page {
         const productAmount = (<ChildNode>(<Node>minusBtn).nextSibling).nextSibling;
         const productPriceTotal = (<HTMLElement>(<ChildNode>(<Node>minusBtn).parentElement)).nextElementSibling;
         if (minusBtnId && productAmount) {
-          if (App.chosenProducts[minusBtnId] < 2) {
-            delete App.chosenProducts[minusBtnId];
-            localStorage.setItem('productsInCart', JSON.stringify(App.chosenProducts));
-            (<HTMLElement>document.getElementsByClassName('cards__container').item(0)).innerHTML = '';
-            (<HTMLElement>document.querySelector('.pagination__controls')).innerHTML = '';
-            this.pagination();
-          } else {
+          if (App.chosenProducts[minusBtnId] > 1) {
             App.chosenProducts[minusBtnId]--;
             const productPrice = CartPage.allProducts.products[+minusBtnId].price;
             productAmount.textContent = `${App.chosenProducts[minusBtnId]}`;
             (<HTMLElement>productPriceTotal).innerText = `€${productPrice * App.chosenProducts[minusBtnId]}`;
             totalAmount[0].innerText = `Products: ${countProductsInCart(App.chosenProducts)}`;
             localStorage.setItem('productsInCart', JSON.stringify(App.chosenProducts));
+          } else {
+            delete App.chosenProducts[minusBtnId];
+            localStorage.setItem('productsInCart', JSON.stringify(App.chosenProducts));
+            (<HTMLElement>document.getElementsByClassName('cards__container').item(0)).innerHTML = '';
+            (<HTMLElement>document.querySelector('.pagination__controls')).innerHTML = '';
+            this.pagination();
           }
         }
         this.showTotalPrice();
@@ -197,7 +203,7 @@ class CartPage extends Page {
     this.showTotalPrice();
   }
 
-  showTotalPrice() {
+  showTotalPrice(): void {
     const totalPrices = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('cart__total-price');
     const productsIds = Object.keys(App.chosenProducts);
     const productsCount = Object.values(App.chosenProducts);
@@ -210,8 +216,6 @@ class CartPage extends Page {
     );
     totalPrices[0].innerText = `Total: €${this.totalPrice.reduce((acc, val) => acc + val, 0)}`;
   }
-
-  calculateProductPrice() {}
 }
 
 export default CartPage;

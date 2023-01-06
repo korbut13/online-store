@@ -1,0 +1,107 @@
+@font-face {
+    font-family: 'Futura';
+    src: url('../../assets/fonts/FuturaPTLight.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Lovelace';
+    src: url('../../assets/fonts/Zetafonts\ -\ Lovelace\ Text\ Regular.otf') format('opentype');
+}
+
+.container {
+    width: calc(100% - 120px);
+    margin: 0 auto;
+}
+
+.bread-crumps {
+    width: 100%;
+    height: 200px;
+}
+
+.product {
+    width: 100%;
+    height: 800px;
+}
+
+.containerProduct {
+    width: 100%;
+}
+
+.titleProduct {
+    width: 100%;
+    height: 50px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.509);
+    font-family: Futura;
+    font-size: 35px;
+    color: white;
+    text-align: center;
+}
+
+.description {
+    display: flex;
+    gap: 20px;
+    background-color: rgba(225, 223, 223, 0.331);
+    border-radius: 10px;
+}
+
+.allImages {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.containerImgs {
+    width: 200px;
+    height: 200px;
+    border: 2px solid rgba(156, 153, 153, 0.216);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: 0.8s;
+}
+
+.containerOneImg {
+    display: flex;
+    align-items: center;
+}
+
+.containerText {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+}
+
+.descriprionCont {
+    white-space: pre-wrap;
+}
+
+.description-header {
+    height: 50px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.509);
+    font-family: Futura;
+    font-size: 30px;
+    color: white;
+    text-align: center;
+}
+
+.description-text {
+    height: 50px;
+    border: 1px solid rgba(0, 0, 0, 0.362);
+    font-family: Futura;
+    font-size: 20px;
+    color: rgb(0, 0, 0);
+    text-align: center;
+    font-style: italic;
+    white-space: pre-wrap;
+}

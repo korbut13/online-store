@@ -150,13 +150,13 @@ li {
 }
 
 .category__span {
-	display: inline;
+    display: inline;
 }
 
 .range-1,
 .range-2,
 .dash {
-	display: inline;
+    display: inline;
 }
 
 .category input[type="checkbox"] {
@@ -373,13 +373,7 @@ select {
     background-repeat: no-repeat;
     background-size: cover;
     cursor: pointer;
-    /* box-shadow: 3px 3px 3px rgb(24, 107, 102); */
 }
-
-/* .few-products:hover,
-.many-products:hover {
-    box-shadow: 3px 3px 3px rgb(255, 255, 255)
-} */
 
 .active {
     box-shadow: 3px 3px 3px rgb(24, 107, 102);

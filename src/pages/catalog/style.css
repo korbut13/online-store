@@ -363,7 +363,7 @@ select {
     background-repeat: no-repeat;
     background-size: cover;
     cursor: pointer;
-    box-shadow: 3px 3px 3px rgb(24, 107, 102);
+    /* box-shadow: 3px 3px 3px rgb(24, 107, 102); */
 }
 
 /* .few-products:hover,

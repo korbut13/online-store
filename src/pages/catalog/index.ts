@@ -236,8 +236,9 @@ class CatalogPage extends Page {
         const imagesOfCards = this.container.getElementsByClassName('cardImg');
         const fewProducts = <HTMLButtonElement>this.container.querySelector('.few-products')
         const manyProducts = <HTMLButtonElement>this.container.querySelector('.many-products');
-        manyProducts.classList.toggle('active');
-        fewProducts.classList.toggle('inactive');
+
+        // manyProducts.classList.toggle('active');
+        // fewProducts.classList.toggle('inactive');
 
         for (const card of cardsOfProducts) {
             card.classList.toggle('card-many-cards');
@@ -293,7 +294,7 @@ class CatalogPage extends Page {
 					  </div>
                         <div class="display-products">
                             <button class="many-products"></button>
-                            <button class="few-products"></button>
+                            <button class="few-products active"></button>
                         </div>
 				  </div>
 					<div class="products__wrapper">
@@ -351,19 +352,18 @@ class CatalogPage extends Page {
         //____________________________Switching the display of products
 
         const fewProducts = <HTMLButtonElement>this.container.querySelector('.few-products');
-        fewProducts.disabled = true;
         const manyProducts = <HTMLButtonElement>this.container.querySelector('.many-products');
 
         manyProducts.addEventListener('click', () => {
             this.toggleClasses();
-            manyProducts.disabled = true;
-            fewProducts.disabled = false;
+            manyProducts.classList.toggle('active');
+            fewProducts.classList.toggle('active');
         })
 
         fewProducts.addEventListener('click', () => {
             this.toggleClasses();
-            fewProducts.disabled = true;
-            manyProducts.disabled = false;
+            manyProducts.classList.toggle('active');
+            fewProducts.classList.toggle('active');
         })
 
         //________________________Add filters by category and brand in layout
@@ -392,12 +392,8 @@ class CatalogPage extends Page {
                     this.deleteFilter((<HTMLInputElement>el).value, this.filteraArrCategory);
                     const filtredData: filtredData = this.getNewData();
                     this.createCardsOfProducts(filtredData);
-                    if (fewProducts.disabled = false) {
+                    if (manyProducts.className === 'many-products active') {
                         this.toggleClasses();
-                        fewProducts.disabled = true;
-                        manyProducts.disabled = false;
-                        manyProducts.classList.toggle('active');
-                        fewProducts.classList.toggle('inactive');
                     }
                 }
                 if ((<HTMLInputElement>el).checked === true) {
@@ -405,12 +401,8 @@ class CatalogPage extends Page {
                     this.setFilters((<HTMLInputElement>el).value, this.filteraArrCategory);
                     const filtredData: filtredData = this.getNewData();
                     this.createCardsOfProducts(filtredData, containerForCards);
-                    if (fewProducts.disabled = false) {
+                    if (manyProducts.className === 'many-products active') {
                         this.toggleClasses();
-                        fewProducts.disabled = true;
-                        manyProducts.disabled = false;
-                        manyProducts.classList.toggle('active');
-                        fewProducts.classList.toggle('inactive');
                     }
                 }
                 if (
@@ -429,16 +421,18 @@ class CatalogPage extends Page {
                     containerForCards.innerHTML = '';
                     this.deleteFilter((<HTMLInputElement>el).value, this.filteraArrBrand);
                     const filtredData: filtredData = this.getNewData();
-                    if (filtredData) {
-                        this.createCardsOfProducts(filtredData);
+                    this.createCardsOfProducts(filtredData);
+                    if (manyProducts.className === 'many-products active') {
+                        this.toggleClasses();
                     }
                 }
                 if ((<HTMLInputElement>el).checked === true) {
                     containerForCards.innerHTML = '';
                     this.setFilters((<HTMLInputElement>el).value, this.filteraArrBrand);
                     const filtredData: filtredData = this.getNewData();
-                    if (filtredData) {
-                        this.createCardsOfProducts(filtredData);
+                    this.createCardsOfProducts(filtredData);
+                    if (manyProducts.className === 'many-products active') {
+                        this.toggleClasses();
                     }
                 }
                 if (

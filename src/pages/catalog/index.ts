@@ -1,22 +1,9 @@
 import Page from '../../core/templates/page';
 import './style.css';
-import { data } from '../../core/components/data/getsData';
+import { DataObject, data } from '../../core/components/data/getsData';
+import { IProduct } from '../../core/components/data/getsData';
 import CardProduct from '../../core/templates/cardProducts';
 import FilterProduct from '../../core/templates/filtersProducts';
-
-type filtredData = {
-    brand: string;
-    category: string;
-    description: string;
-    discountPercentage: number;
-    id: number;
-    images: [string];
-    price: number;
-    rating: number;
-    stock: number;
-    thumbnail: string;
-    title: string;
-}[];
 
 class CatalogPage extends Page {
     static TextObject = {
@@ -25,48 +12,29 @@ class CatalogPage extends Page {
     data = data;
     filteraArrCategory: string[] = [];
     filteraArrBrand: string[] = [];
-    filterArrSearch: filtredData = [];
-    priceRange: [number, number] = [
-        this.data.products.map((el) => el.price).sort((a, b) => a - b)[0],
-        this.data.products.map((el) => el.price).sort((a, b) => b - a)[0],
-    ];
-    stockRange: [number, number] = [
-        this.data.products.map((el) => el.stock).sort((a, b) => a - b)[0],
-        this.data.products.map((el) => el.stock).sort((a, b) => b - a)[0],
-    ];
+    filterArrSearch: IProduct[] = [];
+    priceRange: [number, number] = [this.data.products.map((el) => el.price).sort((a, b) => a - b)[0], this.data.products.map((el) => el.price).sort((a, b) => b - a)[0]];
+    stockRange: [number, number] = [this.data.products.map((el) => el.stock).sort((a, b) => a - b)[0], this.data.products.map((el) => el.stock).sort((a, b) => b - a)[0]];
     private cardExemp: CardProduct;
     private filterCategory: FilterProduct;
 
     constructor(id: string) {
         super(id);
         this.cardExemp = new CardProduct(id);
-        this.filterCategory = new FilterProduct('categoty__input');
+        this.filterCategory = new FilterProduct('categoty__input', 'span__input');
     }
 
-    createCardsOfProducts(
-        arrFiltredProducts: filtredData,
-        containerForCards = <HTMLElement>this.container.querySelector('.main__products')
-    ): void {
+    createCardsOfProducts(arrFiltredProducts: IProduct[], containerForCards = <HTMLElement>this.container.querySelector('.main__products')): void {
         const countOfProducts = <HTMLElement>this.container.querySelector('.count-of-products');
+        console.log(countOfProducts)
         countOfProducts.innerHTML = `Find: ${arrFiltredProducts.length}`;
         if (arrFiltredProducts.length === 0) {
-            containerForCards.innerHTML = 'Nothing found &#129488;';
-            containerForCards.classList.add('main__products_empty');
+            containerForCards.innerHTML = "Nothing found &#129488;"
+            containerForCards.classList.add('main__products_empty')
         }
         for (const product of arrFiltredProducts) {
             this.cardExemp = new CardProduct(`${product.id}`);
-            const card = <HTMLElement>(
-                this.cardExemp.createCard(
-                    product.images[product.images.length - 1],
-                    product.title,
-                    product.category,
-                    product.brand,
-                    product.price,
-                    product.discountPercentage,
-                    product.rating,
-                    product.stock
-                )
-            );
+            const card = <HTMLElement>this.cardExemp.createCard(product.images[product.images.length - 1], product.title, product.category, product.brand, product.price, product.discountPercentage, product.rating, product.stock);
             containerForCards.append(card);
         }
     }
@@ -77,16 +45,18 @@ class CatalogPage extends Page {
             let a = arr[i];
             if (result[a] != undefined) {
                 ++result[a];
-            } else {
+            }
+            else {
                 result[a] = 1;
             }
         }
         return result;
     }
 
-    createFilters(obj: { [key: string]: number }, renderContainer: HTMLElement, nameClass: string): void {
+    createFilters(obj: { [key: string]: number }, renderContainer: HTMLElement, inputNameClass: string): void {
         Object.entries(obj).forEach(([key, value]) => {
-            this.filterCategory = new FilterProduct(nameClass);
+            const spanClassName = key.replace(/ /g, '')
+            this.filterCategory = new FilterProduct(inputNameClass, spanClassName);
             const divCategory = this.filterCategory.renderCheckbox(key, value);
             renderContainer.append(divCategory);
         });
@@ -100,134 +70,125 @@ class CatalogPage extends Page {
         const index: number = filters.indexOf(filterValue, 0);
         if (index !== -1) {
             filters.splice(index, 1);
-        } else {
+        }
+        else {
             console.log('elememt not find');
         }
     }
 
-    getNewData(): filtredData {
+    getNewData(): IProduct[] {
         if (this.filterArrSearch.length === 0) {
-            let filtredData: filtredData = this.data.products.filter(
-                (el) => this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category)
-            );
-            filtredData = filtredData.filter(
-                (el) => this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand)
-            );
-            filtredData = filtredData.filter((el) => el.stock >= this.stockRange[0] && el.stock <= this.stockRange[1]);
-            filtredData = filtredData.filter((el) => el.price >= this.priceRange[0] && el.price <= this.priceRange[1]);
+            let filtredData: IProduct[] = this.data.products.filter(el => this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category));
+            filtredData = filtredData.filter(el => this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand));
+            filtredData = filtredData.filter(el => el.stock >= this.stockRange[0] && el.stock <= this.stockRange[1]);
+            filtredData = filtredData.filter(el => el.price >= this.priceRange[0] && el.price <= this.priceRange[1]);
             return filtredData;
-        } else {
-            let filtredData: filtredData = this.filterArrSearch.filter(
-                (el) => this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category)
-            );
-            filtredData = filtredData.filter(
-                (el) => this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand)
-            );
-            filtredData = filtredData.filter((el) => el.stock >= this.stockRange[0] && el.stock <= this.stockRange[1]);
-            filtredData = filtredData.filter((el) => el.price >= this.priceRange[0] && el.price <= this.priceRange[1]);
+        }
+        else {
+            let filtredData: IProduct[] = this.filterArrSearch.filter(el => this.filteraArrCategory.length === 0 || this.filteraArrCategory.includes(el.category));
+            filtredData = filtredData.filter(el => this.filteraArrBrand.length === 0 || this.filteraArrBrand.includes(el.brand));
+            filtredData = filtredData.filter(el => el.stock >= this.stockRange[0] && el.stock <= this.stockRange[1]);
+            filtredData = filtredData.filter(el => el.price >= this.priceRange[0] && el.price <= this.priceRange[1]);
             return filtredData;
         }
     }
+    rangeComponent(rangeContainer: HTMLElement, min: number, max: number, onChange: (min: number, max: number) => void) {
 
-    fillcolorInputTrack(
-        containerInputsTrackClassName: string,
-        inputOne: HTMLInputElement,
-        inputTwo: HTMLInputElement
-    ): void {
-        const containerTrack = <HTMLElement>this.container.querySelector(containerInputsTrackClassName);
-        const inputTrack = <HTMLCollectionOf<HTMLDivElement>>containerTrack.getElementsByTagName('div');
-        const sliderTrack: HTMLDivElement = inputTrack[0];
-        let sliderMaxValue: string = inputOne.max;
-        let percent1: number = (parseInt(inputOne.value) / parseInt(sliderMaxValue)) * 100;
-        let percent2: number = (parseInt(inputTwo.value) / parseInt(sliderMaxValue)) * 100;
-        sliderTrack.style.background = `linear-gradient(to right, #dadae5 ${percent1}% ,
-			#151516 ${percent1}% , #151516 ${percent2}% , #dadae5 ${percent2}%)`;
-    }
+        const inputs: HTMLCollectionOf<HTMLInputElement> = rangeContainer.getElementsByTagName('input');
+        const inputMin: HTMLInputElement = inputs[0];
+        const inputMax: HTMLInputElement = inputs[1];
 
-    functionalRangesPrice(
-        containerInputsTrackClassName: string,
-        inputOne: HTMLInputElement,
-        inputTwo: HTMLInputElement,
-        min: HTMLSpanElement,
-        max: HTMLSpanElement
-    ): void {
+        const minMaxValue: NodeListOf<HTMLParagraphElement> = rangeContainer.querySelectorAll('.range-values p');
+        const minText: HTMLParagraphElement = minMaxValue[0];
+        const maxText: HTMLParagraphElement = minMaxValue[2];
+
         const minGap: number = 0;
-        const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
 
-        inputOne.addEventListener('input', () => {
-            if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
-                inputOne.value = `${parseInt(inputTwo.value) - minGap}`;
-            }
-            min.textContent = inputOne.value;
-            this.fillcolorInputTrack(containerInputsTrackClassName, inputOne, inputTwo);
-            this.priceRange[0] = parseInt(min.textContent);
-            containerForCards.innerHTML = '';
-            const filtredData = this.getNewData();
-            if (filtredData) this.createCardsOfProducts(filtredData);
+        let currentMin: number = min;
+        let currentMax: number = max;
+
+        inputMin.addEventListener('input', () => {
+            currentMin = parseInt(inputMin.value);
+            currentMax = parseInt(inputMax.value);
+            if (currentMax - currentMin <= minGap) {
+                currentMin = currentMax - minGap
+                inputMin.value = `${currentMin}`;
+            };
+            minText.textContent = inputMin.value;
+            onChange(currentMin, currentMax);
+
         });
+        inputMax.addEventListener('input', () => {
+            currentMin = parseInt(inputMin.value);
+            currentMax = parseInt(inputMax.value);
+            if (currentMax - currentMin <= minGap) {
+                currentMax = currentMin + minGap
+                inputMax.value = `${currentMax} `;
+            };
 
-        inputTwo.addEventListener('input', () => {
-            if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
-                inputTwo.value = `${parseInt(inputOne.value) + minGap}`;
-            }
-            max.textContent = inputTwo.value;
-            this.fillcolorInputTrack(containerInputsTrackClassName, inputOne, inputTwo);
-            this.priceRange[1] = parseInt(max.textContent);
-            containerForCards.innerHTML = '';
-            const filtredData = this.getNewData();
-            if (filtredData) this.createCardsOfProducts(filtredData);
-        });
-    }
-
-    functionalRangesStock(
-        containerInputsTrackClassName: string,
-        inputOne: HTMLInputElement,
-        inputTwo: HTMLInputElement,
-        min: HTMLSpanElement,
-        max: HTMLSpanElement
-    ): void {
-        const minGap = 0;
-        const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
-
-        inputOne.addEventListener('input', () => {
-            if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
-                inputOne.value = `${parseInt(inputTwo.value) - minGap}`;
-            }
-            min.textContent = inputOne.value;
-            this.fillcolorInputTrack(containerInputsTrackClassName, inputOne, inputTwo);
-            this.stockRange[0] = parseInt(min.textContent);
-            containerForCards.innerHTML = '';
-            const filtredData = this.getNewData();
-            if (filtredData) this.createCardsOfProducts(filtredData);
-        });
-
-        inputTwo.addEventListener('input', () => {
-            if (parseInt(inputTwo.value) - parseInt(inputOne.value) <= minGap) {
-                inputTwo.value = `${parseInt(inputOne.value) + minGap}`;
-            }
-            max.textContent = inputTwo.value;
-            this.fillcolorInputTrack(containerInputsTrackClassName, inputOne, inputTwo);
-            this.stockRange[1] = parseInt(max.textContent);
-            containerForCards.innerHTML = '';
-            const filtredData = this.getNewData();
-            if (filtredData) this.createCardsOfProducts(filtredData);
+            maxText.textContent = inputMax.value;
+            onChange(currentMin, currentMax);
         });
     }
 
-    searchProduct(arr: filtredData, val: string): filtredData {
-        return arr.filter(
-            (el) =>
-                el.title.toLowerCase().includes(val.toLowerCase()) ||
-                el.brand.toLowerCase().includes(val.toLowerCase()) ||
-                el.category.toLowerCase().includes(val.toLowerCase()) ||
-                el.description.toLowerCase().includes(val) ||
-                el.discountPercentage.toString().includes(val) ||
-                el.id.toString().includes(val) ||
-                el.price.toString().includes(val.toLowerCase()) ||
-                el.rating.toString().includes(val.toLowerCase())
-        );
+    searchProduct(arr: IProduct[], val: string): IProduct[] {
+        return arr.filter((el) => el.title.toLowerCase().includes(val.toLowerCase()) || el.brand.toLowerCase().includes(val.toLowerCase()) || el.category.toLowerCase().includes(val.toLowerCase()) ||
+            el.description.toLowerCase().includes(val) || el.discountPercentage.toString().includes(val) || el.price.toString().includes(val.toLowerCase()) || el.rating.toString().includes(val.toLowerCase()));
     }
 
+    recalcFoundProducts(data: IProduct[], rangeContainerPrice: HTMLElement, rangeContainerStock: HTMLElement) {
+        const containerAmountFindedFilters = <HTMLElement>this.container.querySelector('.filters')
+        const amountBrandsAndCategory: HTMLCollectionOf<HTMLSpanElement> = containerAmountFindedFilters.getElementsByTagName('span');
+
+        const inputsPrice: HTMLCollectionOf<HTMLInputElement> = rangeContainerPrice.getElementsByTagName('input');
+        const inputMinPrice: HTMLInputElement = inputsPrice[0];
+        const inputMaxPrice: HTMLInputElement = inputsPrice[1];
+
+        const minMaxValuePrice: NodeListOf<HTMLParagraphElement> = rangeContainerPrice.querySelectorAll('.range-values p');
+        const minPriceText: HTMLParagraphElement = minMaxValuePrice[0];
+        const maxPriceText: HTMLParagraphElement = minMaxValuePrice[2];
+
+        const inputsStock: HTMLCollectionOf<HTMLInputElement> = rangeContainerStock.getElementsByTagName('input');
+        const inputMinStock: HTMLInputElement = inputsStock[0];
+        const inputMaxStock: HTMLInputElement = inputsStock[1];
+
+        const minMaxValueStock: NodeListOf<HTMLParagraphElement> = rangeContainerStock.querySelectorAll('.range-values p');
+        const minStockText: HTMLParagraphElement = minMaxValueStock[0];
+        const maxStockText: HTMLParagraphElement = minMaxValueStock[2];
+
+
+        const minPriceValue: number = data.map((el) => el.price).sort((a, b) => a - b)[0];
+        const maxPriceValue: number = data.map((el) => el.price).sort((a, b) => b - a)[0];
+        const minStockValue: number = data.map((el) => el.stock).sort((a, b) => a - b)[0];
+        const maxStockValue: number = data.map((el) => el.stock).sort((a, b) => b - a)[0];
+
+        const brandsFinded: string[] = data.map((elem: { brand: string, }) => elem.brand.replace(/ /g, ''));
+        const categoryFinded: string[] = data.map((el) => el.category);
+        const categoryAndBrands: string[] = brandsFinded.concat(categoryFinded);
+        const objBrandsCategoryFinded: { [key: string]: number } = this.getAmountOfProducts(categoryAndBrands);
+        const arrBrandsCategoryFinded = Object.entries(objBrandsCategoryFinded).flat(Infinity);
+        const arrStringsBrandsCategoryFinded = arrBrandsCategoryFinded.filter((el) => typeof el === "string");
+
+        for (const amount of amountBrandsAndCategory) {
+            if (arrStringsBrandsCategoryFinded.includes(amount.className)) {
+                const index: number = arrBrandsCategoryFinded.indexOf(amount.className);
+                amount.innerHTML = `${arrBrandsCategoryFinded[index + 1]}`;
+
+                inputMinPrice.value = `${minPriceValue}`;
+                inputMaxPrice.value = `${maxPriceValue}`;
+                minPriceText.textContent = inputMinPrice.value;
+                maxPriceText.textContent = inputMaxPrice.value;
+
+                inputMinStock.value = `${minStockValue}`;
+                inputMaxStock.value = `${maxStockValue}`;
+                minStockText.textContent = inputMinStock.value;
+                maxStockText.textContent = inputMaxStock.value;
+            }
+            else {
+                amount.innerHTML = "0";
+            }
+        }
+    }
     toggleClasses() {
         const cardsOfProducts: HTMLCollectionOf<Element> = this.container.getElementsByClassName('card');
         const titleOfCards = this.container.getElementsByClassName('card__title');
@@ -236,9 +197,6 @@ class CatalogPage extends Page {
         const imagesOfCards = this.container.getElementsByClassName('cardImg');
         const fewProducts = <HTMLButtonElement>this.container.querySelector('.few-products')
         const manyProducts = <HTMLButtonElement>this.container.querySelector('.many-products');
-
-        // manyProducts.classList.toggle('active');
-        // fewProducts.classList.toggle('inactive');
 
         for (const card of cardsOfProducts) {
             card.classList.toggle('card-many-cards');
@@ -259,96 +217,95 @@ class CatalogPage extends Page {
 
     render(): HTMLElement {
         const layoutCatalog: string = `<main class="main">
-			<article class="background">
-				<div class="background__img_top"></div>
-				<div class="background__img_info">
-					<p class="background__text">WINTER 2023</p>
-					<button class="background__buttom">TO CATALOG</button>
-				</div>
-				<div class="background__img_left"></div>
-				<div class="background__img_right"></div>
-			</article>
+    <article class="background">
+        <div class="background__img_top" > </div>
+            <div class="background__img_info">
+                <p class="background__text" > WINTER 2023 </p>
+                <button class="background__buttom" > TO CATALOG </button>
+            </div>
+            <div class="background__img_left" > </div>
+            <div class="background__img_right" > </div>
+    </article>
 
-			<p class="main__header" id="catalog">CATALOG</p>
+    <p class="main__header" id = "catalog" > CATALOG </p>
 
-			<section class="products">
-				<div class="container">
-				  <div class="sort-search">
-					  <div class="reset-total">
-						  <button class="reset-total__clear-filters">Reset filters</button>
-						  <button class="reset-total__copy-link">Copy link</button>
-					  </div>
-					  <div class="sort-of-products">
-						  <label for="sort-of-products">Sort options:</label>
-						  <select name="products" id="sort-of-products" class="sort-of-products-select">
-						    <option value="">--Sort options:--</option>
-							  <option value="price-ASC">Sort by price ASC</option>
-							  <option value="price-DESC">Sort by price DESC</option>
-							  <option value="rating-ASC">Sort by rating ASC</option>
-							  <option value="rating-DESC">Sort by rating DESC</option>
-						  </select>
-					  </div>
-					  <div class="count-of-products"></div>
-					  <div class="search">
-						  <input type="search" class="search-of-products" placeholder="Search product">
-					  </div>
-                        <div class="display-products">
-                            <button class="many-products"></button>
-                            <button class="few-products active"></button>
+    <section class="products">
+        <div class="container">
+            <div class="sort-search">
+                <div class="reset-total">
+                    <button class="reset-total__clear-filters" > Reset filters </button>
+                    <button class="reset-total__copy-link" > Copy link </button>
+                </div>
+                <div class="sort-of-products">
+                    <label for= "sort-of-products" > Sort options: </label>
+                    <select name = "products" id = "sort-of-products" class="sort-of-products-select">
+                        <option value="" > --Sort options: --</option>
+                            <option value = "price-ASC" > Sort by price ASC </option>
+                            <option value = "price-DESC" > Sort by price DESC </option>
+                            <option value = "rating-ASC" > Sort by rating ASC </option>
+                            <option value = "rating-DESC" > Sort by rating DESC </option>
+                    </select>
+                </div>
+                <div class="count-of-products" ></div>
+                <div class="search">
+                    <input type="search" class="search-of-products" placeholder = "Search product">
+                </div>
+                <div class="display-products">
+                    <button class="many-products"></button>
+                    <button class="few-products active"></button>
+                </div>
+            </div>
+            <div class="products__wrapper">
+                <div class="filters">
+                    <div class="filters__category">
+                        <h3 id="filters__category_header" class="filters__header" > CATEGORIES </h3>
+                    </div>
+                    <div class="filters__brand">
+                        <h3 class="filters__header"> BRANDS </h3>
+                    </div>
+                    <div class="filters__price">
+                        <h3 class="filters__header" > PRICE </h3>
+                        <div class="price">
+                            <div class="range-values">
+                                <p class="range-1" > 10 </p>
+                                <p class="dash">&ndash; </p>
+                                <p class="range-2" > 1749 </p>
+                            </div>
+                            <div class="price__range">
+                                <div class="slider-track"> </div>
+                                <input type = "range" class="slider-1" value = "0" min = "10" max = "1749">
+                                <input type="range" class="slider-2" value = "1749" min = "10" max = "1749">
+                            </div>
                         </div>
-				  </div>
-					<div class="products__wrapper">
-						<div class="filters">
-							<div class="filters__category">
-								<h3 id="filters__category_header" class="filters__header">CATEGORIES</h3>
-							</div>
-							<div class="filters__brand">
-								<h3 class="filters__header">BRANDS</h3>
-							</div>
-							<div class="filters__price">
-								<h3 class="filters__header">PRICE</h3>
-								<div class="price">
-									<div class="values_price">
-										<span class="range-1">10</span>
-										<span>&ndash;</span>
-										<span class="range-2">1749</span>
-									</div>
-									<div class="price__range">
-										<div class="slider-track"></div>
-										<input type="range" class="slider-1" value="0" min="10" max="1749">
-										<input type="range" class="slider-2" value="1749" min="10" max="1749">
-									</div>
-							</div>
-							</div>
-							<div class="filters__stock">
-								<h3 class="filters__header">AVAILABLE IN STOCK</h3>
-								<div class="stock">
-									<div class="values_stock">
-										<span class="range-1">2</span>
-										<span>&ndash;</span>
-										<span class="range-2">150</span>
-									</div>
-									<div class="stock__range">
-										<div class="slider-track"></div>
-										<input type="range" class="slider-1" value="0" min="2" max="150">
-										<input type="range" class="slider-2" value="150" min="2" max="150">
-									</div>
-							  </div>
-							</div>
-						</div>
-						<div class="main__products"></div>
-					</div>
-				</div>
-			</section>
-
-		</main>`;
+                    </div>
+                    <div class="filters__stock">
+                        <h3 class="filters__header" > AVAILABLE IN STOCK </h3>
+                        <div class="stock">
+                            <div class="range-values">
+                                <p class="range-1" > 2 </p>
+                                <p class="dash">&ndash; </p>
+                                <p class="range-2" > 150 </p>
+                            </div>
+                            <div class="stock__range">
+                                <div class="slider-track"></div>
+                                <input type = "range" class="slider-1" value = "0" min = "2" max = "150">
+                                <input type="range" class="slider-2" value = "150" min = "2" max = "150">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="main__products" > </div>
+            </div>
+        </div>
+    </section>
+</main>`
         this.container.innerHTML = layoutCatalog;
+
 
         //_________________________Add cards of products to div main__products
 
         const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
         this.createCardsOfProducts(this.data.products, containerForCards);
-
         //____________________________Switching the display of products
 
         const fewProducts = <HTMLButtonElement>this.container.querySelector('.few-products');
@@ -366,16 +323,19 @@ class CatalogPage extends Page {
             fewProducts.classList.toggle('active');
         })
 
+
+
         //________________________Add filters by category and brand in layout
 
         const containerFilterCategory = <HTMLElement>this.container.querySelector('.filters__category');
         const containerFilterBrand = <HTMLElement>this.container.querySelector('.filters__brand');
 
-        const allCategories: string[] = this.data.products.map((elem: { category: string }) => elem.category);
-        const allBrands: string[] = this.data.products.map((elem: { brand: string }) => elem.brand);
+        const allCategories: string[] = this.data.products.map((elem: { category: string, }) => elem.category);
+        const allBrands: string[] = this.data.products.map((elem: { brand: string, }) => elem.brand);
 
         const objCategory: { [key: string]: number } = this.getAmountOfProducts(allCategories);
         const objBrand: { [key: string]: number } = this.getAmountOfProducts(allBrands);
+
 
         this.createFilters(objCategory, containerFilterCategory, 'category__input');
         this.createFilters(objBrand, containerFilterBrand, 'brand__input');
@@ -386,92 +346,72 @@ class CatalogPage extends Page {
         const filterBrand: HTMLCollectionOf<Element> = this.container.getElementsByClassName('brand__input');
 
         for (const el of filterCategory) {
-            el.addEventListener('click', async () => {
-                if ((<HTMLInputElement>el).checked === false) {
-                    containerForCards.innerHTML = '';
+            el.addEventListener('click', () => {
+                const checked = (<HTMLInputElement>el).checked;
+                if (!checked) {
                     this.deleteFilter((<HTMLInputElement>el).value, this.filteraArrCategory);
-                    const filtredData: filtredData = this.getNewData();
-                    this.createCardsOfProducts(filtredData);
-                    if (manyProducts.className === 'many-products active') {
-                        this.toggleClasses();
-                    }
-                }
-                if ((<HTMLInputElement>el).checked === true) {
-                    containerForCards.innerHTML = '';
+                } else {
                     this.setFilters((<HTMLInputElement>el).value, this.filteraArrCategory);
-                    const filtredData: filtredData = this.getNewData();
-                    this.createCardsOfProducts(filtredData, containerForCards);
-                    if (manyProducts.className === 'many-products active') {
-                        this.toggleClasses();
-                    }
                 }
-                if (
-                    this.filteraArrCategory.length === 0 &&
-                    this.filteraArrBrand.length === 0 &&
-                    this.filterArrSearch.length === 0
-                ) {
-                    this.createCardsOfProducts(this.data.products);
+                containerForCards.innerHTML = '';
+                const filtredData: IProduct[] = this.getNewData();
+                this.createCardsOfProducts(filtredData, containerForCards);
+                this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock);
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
                 }
-            });
+
+            })
         }
 
         for (const el of filterBrand) {
             el.addEventListener('click', async () => {
-                if ((<HTMLInputElement>el).checked === false) {
-                    containerForCards.innerHTML = '';
+                const checked = (<HTMLInputElement>el).checked;
+                if (!checked) {
                     this.deleteFilter((<HTMLInputElement>el).value, this.filteraArrBrand);
-                    const filtredData: filtredData = this.getNewData();
-                    this.createCardsOfProducts(filtredData);
-                    if (manyProducts.className === 'many-products active') {
-                        this.toggleClasses();
-                    }
                 }
-                if ((<HTMLInputElement>el).checked === true) {
-                    containerForCards.innerHTML = '';
+                else {
                     this.setFilters((<HTMLInputElement>el).value, this.filteraArrBrand);
-                    const filtredData: filtredData = this.getNewData();
-                    this.createCardsOfProducts(filtredData);
-                    if (manyProducts.className === 'many-products active') {
-                        this.toggleClasses();
-                    }
                 }
-                if (
-                    this.filteraArrBrand.length === 0 &&
-                    this.filteraArrCategory.length === 0 &&
-                    this.filterArrSearch.length === 0
-                ) {
-                    this.createCardsOfProducts(this.data.products, containerForCards);
+                containerForCards.innerHTML = '';
+                const filtredData: IProduct[] = this.getNewData();
+                this.createCardsOfProducts(filtredData);
+                this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock);
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
                 }
-            });
+            })
         }
 
         //_________________________Adding filtering functionality by price
 
-        const containerInputsPrice = <HTMLElement>this.container.querySelector('.price__range');
-        const inputsPrice: HTMLCollectionOf<HTMLInputElement> = containerInputsPrice.getElementsByTagName('input');
-        const inputPriceOne: HTMLInputElement = inputsPrice[0];
-        const inputPriceTwo: HTMLInputElement = inputsPrice[1];
+        const containerInputsPrice = <HTMLElement>this.container.querySelector('.price');
 
-        const containerSpansPrice = <HTMLElement>this.container.querySelector('.values_price');
-        const minMaxPrice: HTMLCollectionOf<HTMLSpanElement> = containerSpansPrice.getElementsByTagName('span');
-        const minPrice: HTMLSpanElement = minMaxPrice[0];
-        const maxPrice: HTMLSpanElement = minMaxPrice[2];
+        const containerInputsStock = <HTMLElement>this.container.querySelector('.stock');
 
-        this.functionalRangesPrice('.price__range', inputPriceOne, inputPriceTwo, minPrice, maxPrice);
 
-        //_________________________Adding filtering functionality by stock
+        this.rangeComponent(containerInputsPrice, this.priceRange[0], this.priceRange[1], (min, max) => {
+            containerForCards.innerHTML = "";
+            this.priceRange = [min, max];
+            const filtredData = this.getNewData();
+            this.createCardsOfProducts(filtredData);
+            this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock);
+            if (manyProducts.className === 'many-products active') {
+                this.toggleClasses();
+            }
+        });
+        this.rangeComponent(containerInputsStock, this.stockRange[0], this.priceRange[1], (min, max) => {
+            containerForCards.innerHTML = "";
+            this.stockRange = [min, max];
+            const filtredData = this.getNewData();
+            this.createCardsOfProducts(filtredData);
+            this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock);
+            if (manyProducts.className === 'many-products active') {
+                this.toggleClasses();
+            }
+        })
 
-        const containerInputsStock = <HTMLElement>this.container.querySelector('.stock__range');
-        const inputsStock: HTMLCollectionOf<HTMLInputElement> = containerInputsStock.getElementsByTagName('input');
-        const inputStockOne: HTMLInputElement = inputsStock[0];
-        const inputStockTwo: HTMLInputElement = inputsStock[1];
 
-        const containerSpansStock = <HTMLElement>this.container.querySelector('.values_stock');
-        const minMaxStock: HTMLCollectionOf<HTMLSpanElement> = containerSpansStock.getElementsByTagName('span');
-        const minStock: HTMLSpanElement = minMaxStock[0];
-        const maxStock: HTMLSpanElement = minMaxStock[2];
-
-        this.functionalRangesStock('.stock__range', inputStockOne, inputStockTwo, minStock, maxStock);
 
         //_______________________Adding filtering functionality by sort
 
@@ -479,47 +419,69 @@ class CatalogPage extends Page {
         options.addEventListener('change', (event) => {
             const selectedValue: string = (<HTMLInputElement>event.target).value;
 
-            if (selectedValue === 'price-ASC') {
-                const filtredData: filtredData = this.getNewData();
-                containerForCards.innerHTML = '';
+            if (selectedValue === "price-ASC") {
+                const filtredData: IProduct[] = this.getNewData();
+                containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => a.price - b.price));
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
+                }
             }
-            if (selectedValue === 'price-DESC') {
-                const filtredData: filtredData = this.getNewData();
-                containerForCards.innerHTML = '';
+            if (selectedValue === "price-DESC") {
+                const filtredData: IProduct[] = this.getNewData();
+                containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => b.price - a.price));
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
+                }
             }
-            if (selectedValue === 'rating-ASC') {
-                const filtredData: filtredData = this.getNewData();
-                containerForCards.innerHTML = '';
+            if (selectedValue === "rating-ASC") {
+                const filtredData: IProduct[] = this.getNewData();
+                containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => a.rating - b.rating));
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
+                }
             }
-            if (selectedValue === 'rating-DESC') {
-                const filtredData: filtredData = this.getNewData();
-                containerForCards.innerHTML = '';
+            if (selectedValue === "rating-DESC") {
+                const filtredData: IProduct[] = this.getNewData();
+                containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => b.rating - a.rating));
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
+                }
             }
-        });
+        })
 
         //_______________________Adding filtering functionality by search
 
         const inputSearch = <HTMLInputElement>this.container.querySelector('.search-of-products');
 
         inputSearch.addEventListener('input', () => {
+
             let val: string = inputSearch.value.trim();
-            if (val !== '') {
+            if (val !== "") {
                 this.filterArrSearch = this.searchProduct(this.data.products, val);
-                const filtredData: filtredData = this.getNewData();
-                const searchedArrData: filtredData = this.searchProduct(filtredData, val);
-                containerForCards.innerHTML = '';
+                const filtredData: IProduct[] = this.getNewData();
+                const searchedArrData: IProduct[] = this.searchProduct(filtredData, val)
+                containerForCards.innerHTML = "";
                 this.createCardsOfProducts(searchedArrData);
-            } else {
-                this.filterArrSearch = [];
-                const filtredData: filtredData = this.getNewData();
-                containerForCards.innerHTML = '';
-                this.createCardsOfProducts(filtredData);
+                this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock);
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
+                }
             }
-        });
+            else {
+                this.filterArrSearch = [];
+                const filtredData: IProduct[] = this.getNewData();
+                containerForCards.innerHTML = "";
+                this.createCardsOfProducts(filtredData);
+                this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock);
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
+                }
+            }
+        })
 
         //_______________________________________Reset Filters
 
@@ -531,34 +493,19 @@ class CatalogPage extends Page {
             for (const el of filterBrand) {
                 (<HTMLInputElement>el).checked = false;
             }
-            inputPriceOne.value = '10';
-            inputPriceTwo.value = '1749';
-            minPrice.innerText = inputPriceOne.value;
-            maxPrice.innerText = inputPriceTwo.value;
-            this.fillcolorInputTrack('.price__range', inputPriceOne, inputPriceTwo);
-
-            inputStockOne.value = '2';
-            inputStockTwo.value = '150';
-            minStock.innerText = inputStockOne.value;
-            maxStock.innerText = inputStockTwo.value;
-            this.fillcolorInputTrack('.stock__range', inputStockOne, inputStockTwo);
-
-            inputSearch.value = '';
-
+            inputSearch.value = "";
+            this.priceRange = [this.data.products.map((el) => el.price).sort((a, b) => a - b)[0], this.data.products.map((el) => el.price).sort((a, b) => b - a)[0]];
+            this.stockRange = [this.data.products.map((el) => el.stock).sort((a, b) => a - b)[0], this.data.products.map((el) => el.stock).sort((a, b) => b - a)[0]];
             this.filteraArrCategory = [];
             this.filteraArrBrand = [];
             this.filterArrSearch = [];
-            this.priceRange = [
-                this.data.products.map((el) => el.price).sort((a, b) => a - b)[0],
-                this.data.products.map((el) => el.price).sort((a, b) => b - a)[0],
-            ];
-            this.stockRange = [
-                this.data.products.map((el) => el.stock).sort((a, b) => a - b)[0],
-                this.data.products.map((el) => el.stock).sort((a, b) => b - a)[0],
-            ];
-            containerForCards.innerHTML = '';
+            containerForCards.innerHTML = "";
             this.createCardsOfProducts(this.data.products);
-        });
+            this.recalcFoundProducts(this.data.products, containerInputsPrice, containerInputsStock);
+            if (manyProducts.className === 'many-products active') {
+                this.toggleClasses();
+            }
+        })
         return this.container;
     }
 }

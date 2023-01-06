@@ -149,6 +149,16 @@ li {
 	text-transform: uppercase;
 }
 
+.category__span {
+	display: inline;
+}
+
+.range-1,
+.range-2,
+.dash {
+	display: inline;
+}
+
 .category input[type="checkbox"] {
 	display: none;
 }

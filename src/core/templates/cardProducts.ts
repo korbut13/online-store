@@ -1,7 +1,7 @@
 import App from '../../pages/app';
 import { PageIds } from '../../pages/app';
 
-enum ButtonText {
+export enum ButtonText {
     ADD_TO_CART = 'ADD TO CART',
     DROP_FROM_CART = 'DROP FROM CART',
 }
@@ -63,6 +63,7 @@ class CardProduct {
             } else {
                 App.chosenProducts[this.container.id] = 1;
                 buttonToCart.innerText = ButtonText.DROP_FROM_CART;
+                console.log(App.chosenProducts[this.container.id])
             }
             localStorage.setItem('productsInCart', JSON.stringify(App.chosenProducts));
         });

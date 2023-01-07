@@ -37,6 +37,7 @@ class App {
             page = new MainPage(idPage);
         } else if (idPage === PageIds.CartPage || window.location.hash.slice(1) === PageIds.CartPage) {
             page = new CartPage(idPage);
+
         } else if (idPage.includes(PageIds.ProductPage)) {
             page = new ProductPage(idPage);
             console.log(idPage);

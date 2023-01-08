@@ -54,6 +54,13 @@ class CartPage extends Page {
     if (localStorage.getItem('productsInCart') !== null) {
       App.chosenProducts = JSON.parse(localStorage.getItem('productsInCart') || App.chosenProducts.toString());
 
+      const buyBtn = <HTMLButtonElement>document.createElement('button');
+      buyBtn.classList.add('cart__button');
+      buyBtn.innerText = 'BUY NOW';
+      buyBtn.addEventListener('click', () => {
+        this.showModal();
+      });
+
       orderInfo.innerHTML = `
       <h2 class="cart__total">Products: ${countProductsInCart(App.chosenProducts)}</h2>
       <h2 class="cart__total cart__total-price" id='total'>Total: €</h2>
@@ -61,9 +68,9 @@ class CartPage extends Page {
       <div class="promo__container" id="promo__container">
         <input class="promo__container-input" id="promo" type="search" placeholder="Enter promo code">
         <span class="promo__container-info">Promo for test 'rs'</span>
-       </div>
-      <button class="cart__button">BUY NOW</button>`;
+       </div>`;
 
+      orderInfo.append(buyBtn);
       productsContainer.append(containerCards, orderInfo);
       cartPage.append(title, productsContainer, paginationContainer);
       this.pagination();
@@ -258,6 +265,53 @@ class CartPage extends Page {
       <button class='applied-promo__btn' id='rs-drop-btn'>Drop</button>
     </div>`;
     promoContainer.insertAdjacentElement('beforebegin', appliedPromoContainer);
+  }
+
+  showModal() {
+    const overlay = <HTMLDivElement>document.createElement('div');
+    overlay.classList.add('overlay');
+
+    const modalContainer = <HTMLDivElement>document.createElement('div');
+    modalContainer.classList.add('modal__container');
+
+    modalContainer.innerHTML = `
+    <form>
+      <div class='personal-details__wrapper'>
+        <h3 class='details__title'>Personal details</h3>
+        <input class='details__input' type='text' placeholder='Name' required>
+        <input class='details__input' type='tel' placeholder='Phone number' required>
+        <input class='details__input' type='text' placeholder='Delivery address' required>
+        <input class='details__input' type='email' placeholder='Email' required>
+      </div>
+      <div class='card-details__wrapper'>
+        <h3 class='details__title'>Credit card details</h3>
+        <input class='details__input' type='number' placeholder='Card number' required>
+        <input class='details__input' type='number' placeholder='Valid to..' required>
+        <input class='details__input' type='number' placeholder='CVV' required>
+      </div>
+    </form>`;
+
+    const confirmBtn = <HTMLButtonElement>document.createElement('button');
+    confirmBtn.classList.add('button', 'confirm__button');
+    confirmBtn.innerText = 'confirm';
+    confirmBtn.addEventListener('click', () => {
+      setTimeout(() => {
+        window.location.hash = PageIds.CatalogPage;
+      }, 5000);
+    });
+
+    modalContainer.append(confirmBtn);
+    document.body.style.overflow = 'hidden';
+    document.body.prepend(overlay);
+    document.body.append(modalContainer);
+
+    const closeModal = (): void => {
+      modalContainer.remove();
+      overlay.remove();
+      document.body.style.overflowY = 'scroll';
+    };
+
+    overlay.addEventListener('click', closeModal);
   }
 }
 

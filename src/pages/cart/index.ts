@@ -278,16 +278,16 @@ class CartPage extends Page {
     <form>
       <div class='personal-details__wrapper'>
         <h3 class='details__title'>Personal details</h3>
-        <input class='details__input' type='text' placeholder='Name' required>
-        <input class='details__input' type='tel' placeholder='Phone number' required>
-        <input class='details__input' type='text' placeholder='Delivery address' required>
-        <input class='details__input' type='email' placeholder='Email' required>
+        <input class='details__input' id='name' type='text' placeholder='Name' required>
+        <input class='details__input' id='phone' type='tel' placeholder='Phone number' required>
+        <input class='details__input' id='address' type='text' placeholder='Delivery address' required>
+        <input class='details__input' id='email' type='email' placeholder='Email' required>
       </div>
       <div class='card-details__wrapper'>
         <h3 class='details__title'>Credit card details</h3>
-        <input class='details__input' type='number' placeholder='Card number' required>
-        <input class='details__input' type='number' placeholder='Valid to..' required>
-        <input class='details__input' type='number' placeholder='CVV' required>
+        <input class='details__input input-number' id='card-number' type='number' placeholder='Card number' required>
+        <input class='details__input input-number' id='valid-date' type='number' placeholder='Valid to..' required>
+        <input class='details__input input-number' id='cvv' type='number' placeholder='CVV' required>
       </div>
     </form>`;
 
@@ -312,6 +312,25 @@ class CartPage extends Page {
     };
 
     overlay.addEventListener('click', closeModal);
+  }
+
+  validateForm() {
+    const nameInput = <HTMLInputElement>document.getElementById('name');
+    const phoneInput = <HTMLInputElement>document.getElementById('phone');
+    const addressInput = <HTMLInputElement>document.getElementById('address');
+    const emailInput = <HTMLInputElement>document.getElementById('email');
+
+    const nameRegExp = /^[A-Za-z]{3,} [a-zA-Z]{3,}$/;
+    const phoneRegExp = /^\+[0-9]\d{8}$/;
+    const addressRegExp = /^[A-Za-z]{5,} [a-zA-Z]{5,} [a-zA-Z]{5,}$/;
+    const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    return (
+      nameRegExp.test(nameInput.value) &&
+      phoneInput.value.match(phoneRegExp) &&
+      addressRegExp.test(addressInput.value) &&
+      emailRegExp.test(emailInput.value)
+    );
   }
 }
 

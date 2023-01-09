@@ -70,9 +70,7 @@ class CartPage extends Page {
 
     paginationContainer.append(paginationElements);
 
-    if (localStorage.getItem('productsInCart') !== null) {
-      App.chosenProducts = JSON.parse(localStorage.getItem('productsInCart') || App.chosenProducts.toString());
-
+    if (localStorage.getItem('productsInCart') !== null && localStorage.getItem('productsInCart') !== '{}') {
       const buyBtn = <HTMLButtonElement>document.createElement('button');
       buyBtn.classList.add('cart__button');
       buyBtn.innerText = 'BUY NOW';
@@ -347,7 +345,7 @@ class CartPage extends Page {
       setTimeout(() => {
         window.location.hash = PageIds.CatalogPage;
         App.chosenProducts = {};
-        localStorage.setItem('productsInCart', JSON.stringify(App.chosenProducts));
+        localStorage.removeItem('productsInCart');
       }, 5000);
     };
 

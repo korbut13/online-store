@@ -61,7 +61,8 @@ class Product {
     private createAllImages(arrLinks: string[]): HTMLDivElement {
         const allImages = document.createElement('div');
         allImages.classList.add('allImages');
-        for (const link of arrLinks) {
+        const newallImages = Array.from(new Set(arrLinks));
+        for (const link of newallImages) {
             const containerImgs = document.createElement('div');
             containerImgs.classList.add('containerImgs');
             const img = document.createElement('img');

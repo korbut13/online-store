@@ -3,6 +3,25 @@ import Page from '../../core/templates/page';
 import { countProductsInCart, getProductsInCart } from '../../utils/helpers';
 import App, { PageIds } from '../app';
 import './index.css';
+import americanExpress from '../../assets/icons/payment-systems/american-express.png';
+import defaultSystemIcon from '../../assets/icons/payment-systems/default.png';
+import Visa from '../../assets/icons/payment-systems/visa.png';
+import Mastercard from '../../assets/icons/payment-systems/mastercard.png';
+
+export enum InputValidationError {
+  nameError = 'The name and surname should have more than 3 letters',
+  phoneError = 'The phone number should start from "+" and have 9 - 12 numbers',
+  addressError = 'The address should consist of 3 words with minimal length 5 each',
+  emailError = 'Enter valid email',
+  cvvError = 'Enter only numbers',
+  dataError = 'Enter valid data',
+}
+
+export enum PaymentSystem {
+  AMERICAN_EXPRESS = '3',
+  VISA = '4',
+  MASTERCARD = '5',
+}
 
 class CartPage extends Page {
   static TextObject = {
@@ -285,25 +304,52 @@ class CartPage extends Page {
       </div>
       <div class='card-details__wrapper'>
         <h3 class='details__title'>Credit card details</h3>
-        <input class='details__input input-number' id='card-number' type='number' placeholder='Card number' required>
-        <input class='details__input input-number' id='valid-date' type='number' placeholder='Valid to..' required>
-        <input class='details__input input-number' id='cvv' type='number' placeholder='CVV' required>
+        <div class='payment__wrapper'>
+          <img class='payment-icon' id='card-icon' src=${defaultSystemIcon} alt=''>
+          <input class='details__input card__input input-number' id='card-number' type='number' placeholder='Card number' required>
+        </div>
+        <div class='card-params__wrapper'>
+          <input class='details__input' id='valid-date' type='text' placeholder='Valid to..' required>
+          <input class='details__input input-number' id='cvv' type='number' placeholder='CVV' required>
+        </div>
       </div>
     </form>`;
+
+    const errorMsg = <HTMLParagraphElement>document.createElement('p');
+    errorMsg.classList.add('error');
+    errorMsg.innerText = InputValidationError.dataError;
 
     const confirmBtn = <HTMLButtonElement>document.createElement('button');
     confirmBtn.classList.add('button', 'confirm__button');
     confirmBtn.innerText = 'confirm';
     confirmBtn.addEventListener('click', () => {
-      setTimeout(() => {
-        window.location.hash = PageIds.CatalogPage;
-      }, 5000);
+      this.validateForm() ? successOrder() : modalContainer.append(errorMsg);
     });
 
     modalContainer.append(confirmBtn);
     document.body.style.overflow = 'hidden';
     document.body.prepend(overlay);
     document.body.append(modalContainer);
+
+    const cardNumberInput = <HTMLInputElement>document.getElementById('card-number');
+    cardNumberInput.addEventListener('input', () => {
+      const cardIcon = <HTMLImageElement>document.getElementById('card-icon');
+      cardIcon.setAttribute('src', this.getPaymentSystemIcon(cardNumberInput.value));
+    });
+
+    const cardValidDateInput = <HTMLInputElement>document.getElementById('valid-date');
+    cardValidDateInput.addEventListener('input', () => {
+      const cardValidDateRegExp = /^[0-9]{2}\/[0-9]{2}$/;
+    });
+
+    const successOrder = () => {
+      closeModal();
+      setTimeout(() => {
+        window.location.hash = PageIds.CatalogPage;
+        App.chosenProducts = {};
+        localStorage.setItem('productsInCart', JSON.stringify(App.chosenProducts));
+      }, 5000);
+    };
 
     const closeModal = (): void => {
       modalContainer.remove();
@@ -319,18 +365,37 @@ class CartPage extends Page {
     const phoneInput = <HTMLInputElement>document.getElementById('phone');
     const addressInput = <HTMLInputElement>document.getElementById('address');
     const emailInput = <HTMLInputElement>document.getElementById('email');
+    const cardNumberInput = <HTMLInputElement>document.getElementById('card-number');
+    const cvvInput = <HTMLInputElement>document.getElementById('cvv');
 
     const nameRegExp = /^[A-Za-z]{3,} [a-zA-Z]{3,}$/;
-    const phoneRegExp = /^\+[0-9]\d{8}$/;
+    const phoneRegExp = /^\+[0-9]{9,12}$/;
     const addressRegExp = /^[A-Za-z]{5,} [a-zA-Z]{5,} [a-zA-Z]{5,}$/;
     const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const cardNumberRegExp = /^[0-9]{16}$/;
+    const cvvRegExp = /^[0-9]{3}$/;
 
     return (
       nameRegExp.test(nameInput.value) &&
-      phoneInput.value.match(phoneRegExp) &&
+      phoneRegExp.test(phoneInput.value) &&
       addressRegExp.test(addressInput.value) &&
-      emailRegExp.test(emailInput.value)
+      emailRegExp.test(emailInput.value) &&
+      cardNumberRegExp.test(cardNumberInput.value) &&
+      cvvRegExp.test(cvvInput.value)
     );
+  }
+
+  getPaymentSystemIcon(value: string): string {
+    switch (value[0]) {
+      case PaymentSystem.AMERICAN_EXPRESS:
+        return americanExpress;
+      case PaymentSystem.VISA:
+        return Visa;
+      case PaymentSystem.MASTERCARD:
+        return Mastercard;
+      default:
+        return defaultSystemIcon;
+    }
   }
 }
 

@@ -21,9 +21,12 @@ class FilterProduct {
         this.countAllProducts = document.createElement('p');
         this.countAllProducts.classList.add('category__span');
     }
-    renderCheckbox(value: string, countAll: number): HTMLElement {
+    renderCheckbox(value: string, countAll: number, checked: boolean = false): HTMLElement {
         this.input.setAttribute('value', value);
         this.input.setAttribute('id', value);
+        if (checked) {
+            this.input.setAttribute('checked', '');
+        }
         this.label.setAttribute('for', value);
         this.label.innerHTML = value;
         this.countFindproducts.innerHTML = `${countAll}`;

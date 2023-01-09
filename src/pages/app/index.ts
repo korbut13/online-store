@@ -39,6 +39,8 @@ class App {
             page = new MainPage(idPage);
         } else if (idPage === PageIds.CartPage || path.includes(PageIds.CartPage)) {
             page = new CartPage(idPage);
+        } else if (path.includes(PageIds.ProductPage) || window.location.hash.includes(PageIds.ProductPage)) {
+            page = new ProductPage(idPage);
         } else {
             page = new ErrorPage(idPage, ErrorTypes.Error_404);
         }

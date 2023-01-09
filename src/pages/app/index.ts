@@ -3,6 +3,7 @@ import Header from '../../core/components/header';
 import MainPage from '../catalog';
 import ErrorPage, { ErrorTypes } from '../error';
 import CartPage from '../cart';
+import ProductPage from '../product';
 import Footer from '../../core/components/footer';
 import Main from '../../core/components/main';
 

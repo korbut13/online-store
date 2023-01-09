@@ -164,7 +164,7 @@ class CatalogPage extends Page {
             currentMax = parseInt(inputMax.value);
             if (currentMax - currentMin <= minGap) {
                 currentMax = currentMin + minGap
-                inputMax.value = `${currentMax}`;
+                inputMax.value = `${currentMax} `;
             };
 
             maxText.textContent = inputMax.value;
@@ -235,6 +235,31 @@ class CatalogPage extends Page {
         this.stockRange[0] = minStockValue;
         this.stockRange[1] = maxStockValue;
     }
+    toggleClasses() {
+        const cardsOfProducts: HTMLCollectionOf<Element> = this.container.getElementsByClassName('card');
+        const titleOfCards = this.container.getElementsByClassName('card__title');
+        const descriptionOfCards = this.container.getElementsByClassName('card__text');
+        const buttonnsOfCards = this.container.getElementsByClassName('container__button');
+        const imagesOfCards = this.container.getElementsByClassName('cardImg');
+        const fewProducts = <HTMLButtonElement>this.container.querySelector('.few-products')
+        const manyProducts = <HTMLButtonElement>this.container.querySelector('.many-products');
+
+        for (const card of cardsOfProducts) {
+            card.classList.toggle('card-many-cards');
+        }
+        for (const title of titleOfCards) {
+            title.classList.toggle('card-title-many-cards')
+        }
+        for (const text of descriptionOfCards) {
+            text.classList.toggle('absence')
+        }
+        for (const buttons of buttonnsOfCards) {
+            buttons.classList.toggle('buttons-many-cards')
+        }
+        for (const image of imagesOfCards) {
+            image.classList.toggle('cardImg-many-cards')
+        }
+    }
 
     createFilterString(): string {
         let filterValue: string = `price=${this.priceRange[0]},${this.priceRange[1]}&stock=${this.stockRange[0]},${this.stockRange[1]}&`;
@@ -267,13 +292,13 @@ class CatalogPage extends Page {
         <div class="background__img_top" > </div>
             <div class="background__img_info">
                 <p class="background__text" > WINTER 2023 </p>
-                <button class="background__buttom" > TO CATALOG </button>
+                <a class="background__buttom" href="#catalog-page"> TO CATALOG </a>
             </div>
             <div class="background__img_left" > </div>
             <div class="background__img_right" > </div>
     </article>
 
-    <p class="main__header" id = "catalog" > CATALOG </p>
+    <p class="main__header" id="catalog" > CATALOG </p>
 
     <section class="products">
         <div class="container">
@@ -295,6 +320,10 @@ class CatalogPage extends Page {
                 <div class="count-of-products" ></div>
                 <div class="search">
                     <input type="search" class="search-of-products" placeholder = "Search product">
+                </div>
+                <div class="display-products">
+                    <button class="many-products"></button>
+                    <button class="few-products active"></button>
                 </div>
             </div>
             <div class="products__wrapper">
@@ -348,7 +377,24 @@ class CatalogPage extends Page {
         //_________________________Add cards of products to div main__products
 
         const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
-        this.createCardsOfProducts(this.getNewData(), containerForCards);
+        this.createCardsOfProducts(this.data.products, containerForCards);
+        //____________________________Switching the display of products
+
+        const fewProducts = <HTMLButtonElement>this.container.querySelector('.few-products');
+        const manyProducts = <HTMLButtonElement>this.container.querySelector('.many-products');
+
+        manyProducts.addEventListener('click', () => {
+            this.toggleClasses();
+            manyProducts.classList.toggle('active');
+            fewProducts.classList.toggle('active');
+        })
+
+        fewProducts.addEventListener('click', () => {
+            this.toggleClasses();
+            manyProducts.classList.toggle('active');
+            fewProducts.classList.toggle('active');
+        })
+
 
 
         //________________________Add filters by category and brand in layout
@@ -384,6 +430,9 @@ class CatalogPage extends Page {
                 const filtredData: IProduct[] = this.getNewData();
                 this.createCardsOfProducts(filtredData, containerForCards);
                 this.recalcFoundProducts(this.getNewData(), containerInputsPrice, containerInputsStock);
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
+                }
                 this.replaceFilterString();
             })
         }
@@ -401,6 +450,9 @@ class CatalogPage extends Page {
                 const filtredData: IProduct[] = this.getNewData();
                 this.createCardsOfProducts(filtredData);
                 this.recalcFoundProducts(this.getNewData(), containerInputsPrice, containerInputsStock);
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
+                }
                 this.replaceFilterString();
             })
         }
@@ -421,6 +473,9 @@ class CatalogPage extends Page {
             const filtredData = this.getNewData();
             this.createCardsOfProducts(filtredData);
             this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock);
+            if (manyProducts.className === 'many-products active') {
+                this.toggleClasses();
+            }
             this.replaceFilterString()
 
 
@@ -431,6 +486,9 @@ class CatalogPage extends Page {
             const filtredData = this.getNewData();
             this.createCardsOfProducts(filtredData);
             this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock);
+            if (manyProducts.className === 'many-products active') {
+                this.toggleClasses();
+            }
             this.replaceFilterString();
         })
 
@@ -446,21 +504,33 @@ class CatalogPage extends Page {
                 const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => a.price - b.price));
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
+                }
             }
             if (selectedValue === "price-DESC") {
                 const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => b.price - a.price));
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
+                }
             }
             if (selectedValue === "rating-ASC") {
                 const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => a.rating - b.rating));
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
+                }
             }
             if (selectedValue === "rating-DESC") {
                 const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => b.rating - a.rating));
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
+                }
             }
         })
 
@@ -479,6 +549,9 @@ class CatalogPage extends Page {
                 containerForCards.innerHTML = "";
                 this.createCardsOfProducts(searchedArrData);
                 this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock);
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
+                }
                 this.replaceFilterString();
             }
             else {
@@ -486,7 +559,11 @@ class CatalogPage extends Page {
                 const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = "";
                 this.createCardsOfProducts(filtredData);
-                this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock)
+                this.recalcFoundProducts(filtredData, containerInputsPrice, containerInputsStock);
+                if (manyProducts.className === 'many-products active') {
+                    this.toggleClasses();
+                }
+                this.replaceFilterString();
             }
         })
 
@@ -510,6 +587,9 @@ class CatalogPage extends Page {
             containerForCards.innerHTML = "";
             this.createCardsOfProducts(this.data.products);
             this.recalcFoundProducts(this.data.products, containerInputsPrice, containerInputsStock);
+            if (manyProducts.className === 'many-products active') {
+                this.toggleClasses();
+            }
             this.replaceFilterString();
             window.location.hash = 'catalog-page';
         });

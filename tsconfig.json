@@ -1,7 +1,6 @@
 {
 	"compilerOptions": {
 		"module": "esnext",
-		"module": "esnext",
 		"outDir": "./dist",
 		"moduleResolution": "node",
 		"allowJs": true,
@@ -11,7 +10,8 @@
 	},
 	"include": [
 		"./src/**/*",
-		"src/core/components/header/header.d.ts"
+		"src/core/components/header/header.d.ts",
+		"src/pages/cart/cart.d.ts"
 	],
 	"exclude": [
 		"node_modules"

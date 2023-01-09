@@ -235,3 +235,106 @@
   border: 1px solid #474a51;
   cursor: pointer;
 }
+
+.overlay {
+  background-color: #29292999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  height: 100vh;
+  width: 100vw;
+  cursor: pointer;
+}
+
+.modal__container {
+  width: 550px;
+  height: 550px;
+  padding: 20px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  top: 17%;
+  left: 30%;
+  background-color: #fff;
+  border-radius: 5px;
+}
+
+.personal-details__wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.details__title {
+  margin-top: 20px;
+  font-family: 'Futura';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 130%;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #474a51;
+}
+
+.details__input {
+  width: 320px;
+  height: 45px;
+  display: block;
+  border: none;
+  border-bottom: 1px solid #474a51;
+}
+
+.payment__wrapper {
+  display: flex;
+}
+
+.payment-icon {
+  width: 60px;
+  height: 45px;
+  margin-right: 10px;
+  background-color: #fff;
+}
+
+.card__input {
+  width: 250px;
+}
+
+.input-number::-webkit-outer-spin-button,
+.input-number::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.input-number,
+.input-number:hover,
+.input-number:focus {
+  appearance: none;
+  -moz-appearance: textfield;
+}
+
+.card-params__wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-params__wrapper .details__input {
+  width: 140px;
+}
+
+.details__input:focus {
+  outline: none;
+}
+
+.error {
+  margin-top: 5px;
+  font-family: 'Futura';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0.02em;
+  color: #ff0000;
+}

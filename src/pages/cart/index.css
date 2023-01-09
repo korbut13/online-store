@@ -267,7 +267,8 @@
   flex-direction: column;
 }
 
-.details__title {
+.details__title,
+.order__title {
   margin-top: 20px;
   font-family: 'Futura';
   font-style: normal;

@@ -341,7 +341,10 @@ class CartPage extends Page {
     });
 
     const successOrder = () => {
-      closeModal();
+      this.showSuccessPopup(modalContainer);
+      setTimeout(() => {
+        closeModal();
+      }, 2000);
       setTimeout(() => {
         window.location.hash = PageIds.CatalogPage;
         App.chosenProducts = {};
@@ -356,6 +359,15 @@ class CartPage extends Page {
     };
 
     overlay.addEventListener('click', closeModal);
+  }
+
+  showSuccessPopup(container: HTMLElement) {
+    container.innerHTML = '';
+    const successPopupContainer = <HTMLDivElement>document.createElement('div');
+    successPopupContainer.classList.add('popup__container');
+    successPopupContainer.innerHTML = `<h3 class='order__title'>Thank you for your order!</h3>`;
+
+    return container.append(successPopupContainer);
   }
 
   validateForm() {

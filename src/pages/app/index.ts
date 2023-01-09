@@ -29,18 +29,16 @@ class App {
         }
         let page: Page | null = null;
 
-        if (
-            idPage === PageIds.CatalogPage ||
-            window.location.hash === '' ||
-            window.location.hash.slice(1) === PageIds.CatalogPage
+        const splittedHash: string[] = window.location.hash.slice(1).split('?')
+        const path: string = splittedHash[0];
+
+        if (idPage === PageIds.CatalogPage ||
+            path === '' ||
+            path.includes(PageIds.CatalogPage)
         ) {
             page = new MainPage(idPage);
-        } else if (idPage === PageIds.CartPage || window.location.hash.slice(1) === PageIds.CartPage) {
+        } else if (idPage === PageIds.CartPage || path.includes(PageIds.CartPage)) {
             page = new CartPage(idPage);
-
-        } else if (idPage.includes(PageIds.ProductPage) || window.location.hash.includes(PageIds.ProductPage)) {
-            page = new ProductPage(idPage);
-            console.log(idPage);
         } else {
             page = new ErrorPage(idPage, ErrorTypes.Error_404);
         }

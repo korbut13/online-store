@@ -304,8 +304,8 @@ class CatalogPage extends Page {
         <div class="container">
             <div class="sort-search">
                 <div class="reset-total">
-                    <button class="reset-total__clear-filters" > Reset filters </button>
-                    <button class="reset-total__copy-link" > Copy link </button>
+                    <button class="reset-total__clear-filters"> Reset filters </button>
+                    <button class="reset-total__copy-link"> Copy link </button>
                 </div>
                 <div class="sort-of-products">
                     <label for= "sort-of-products" > Sort options: </label>
@@ -377,7 +377,7 @@ class CatalogPage extends Page {
         //_________________________Add cards of products to div main__products
 
         const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
-        this.createCardsOfProducts(this.data.products, containerForCards);
+        this.createCardsOfProducts(this.getNewData(), containerForCards);
         //____________________________Switching the display of products
 
         const fewProducts = <HTMLButtonElement>this.container.querySelector('.few-products');
@@ -593,6 +593,20 @@ class CatalogPage extends Page {
             this.replaceFilterString();
             window.location.hash = 'catalog-page';
         });
+
+        const copyLink = <HTMLButtonElement>this.container.querySelector('.reset-total__copy-link');
+        copyLink.addEventListener('click', () => {
+            const text = window.location.href;
+            navigator.clipboard.writeText(text);
+
+            copyLink.classList.add('copyLink');
+            copyLink.innerText = "Copied";
+            setTimeout(() => {
+                copyLink.innerText = "Copy link";
+                copyLink.classList.toggle('copyLink');
+            }, 1000)
+        })
+
 
 
         return this.container;

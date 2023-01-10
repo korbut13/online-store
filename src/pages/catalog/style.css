@@ -508,5 +508,8 @@ select {
     background-color: #454545be;
     color: white;
     margin-bottom: 10px;
+}
 
+.copyLink {
+    background-color: rgb(80, 187, 184);
 }

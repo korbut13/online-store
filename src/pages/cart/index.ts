@@ -29,7 +29,7 @@ class CartPage extends Page {
   };
 
   static allProducts = data;
-  totalPrice: number[] = [];
+  static totalPrice: number[] = [];
 
   constructor(id: string) {
     super(id);
@@ -106,6 +106,7 @@ class CartPage extends Page {
   incrementProducts(): void {
     const plusButtonsCollection = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('plus-btn');
     const totalAmount = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('cart__total');
+    const headerTotalAmount = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('product__count');
     for (let i = 0; i < plusButtonsCollection.length; i++) {
       plusButtonsCollection[i].addEventListener('click', (e) => {
         const plusBtn = <EventTarget>e.target;
@@ -116,11 +117,12 @@ class CartPage extends Page {
           App.chosenProducts[plusBtnId]++;
           productAmount.textContent = `${App.chosenProducts[plusBtnId]}`;
           totalAmount[0].innerText = `Products: ${countProductsInCart(App.chosenProducts)}`;
+          headerTotalAmount[0].innerText = `${countProductsInCart(App.chosenProducts)}`;
           const productPrice = CartPage.allProducts.products[+plusBtnId].price;
           (<HTMLElement>productPriceTotal).innerText = `€${productPrice * App.chosenProducts[plusBtnId]}`;
           localStorage.setItem('productsInCart', JSON.stringify(App.chosenProducts));
         }
-        this.showTotalPrice();
+        CartPage.showTotalPrice();
       });
     }
   }
@@ -128,6 +130,7 @@ class CartPage extends Page {
   decrementProducts(): void {
     const minusButtonsCollection = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('minus-btn');
     const totalAmount = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('cart__total');
+    const headerTotalAmount = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('product__count');
     for (let i = 0; i < minusButtonsCollection.length; i++) {
       minusButtonsCollection[i].addEventListener('click', (e) => {
         const minusBtn = <EventTarget>e.target;
@@ -141,6 +144,7 @@ class CartPage extends Page {
             productAmount.textContent = `${App.chosenProducts[minusBtnId]}`;
             (<HTMLElement>productPriceTotal).innerText = `€${productPrice * App.chosenProducts[minusBtnId]}`;
             totalAmount[0].innerText = `Products: ${countProductsInCart(App.chosenProducts)}`;
+            headerTotalAmount[0].innerText = `${countProductsInCart(App.chosenProducts)}`;
             localStorage.setItem('productsInCart', JSON.stringify(App.chosenProducts));
           } else {
             delete App.chosenProducts[minusBtnId];
@@ -150,7 +154,7 @@ class CartPage extends Page {
             this.pagination();
           }
         }
-        this.showTotalPrice();
+        CartPage.showTotalPrice();
       });
     }
   }
@@ -224,11 +228,11 @@ class CartPage extends Page {
 
     displayList(data, rows, currentPage);
     displayPagination(data, rows);
-    this.showTotalPrice();
+    CartPage.showTotalPrice();
     this.applyDiscount();
   }
 
-  showTotalPrice(): void {
+  static showTotalPrice(): void {
     const totalPrices = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName('cart__total-price');
     const productsIds = Object.keys(App.chosenProducts);
     const productsCount = Object.values(App.chosenProducts);
@@ -239,14 +243,16 @@ class CartPage extends Page {
     this.totalPrice = Array.apply(0, Array(productsCount.length)).map(
       (item, index) => productsCount[index] * productsPrices[index]
     );
-    totalPrices[0].innerText = `Total: €${this.totalPrice.reduce((acc, val) => acc + val, 0)}`;
+    for (let i = 0; i < totalPrices.length; i++) {
+      totalPrices[i].innerText = `Total: €${this.totalPrice.reduce((acc, val) => acc + val, 0)}`;
+    }
   }
 
   applyDiscount(): void {
     const oldTotalPrice = <HTMLElement>document.getElementById('total');
     const totalPriceWithDiscount = <HTMLElement>document.getElementById('promo-total');
     const discount = <HTMLInputElement>document.getElementById('promo');
-    const totalProductsPrice = this.totalPrice.reduce((acc, val) => acc + val, 0);
+    const totalProductsPrice = CartPage.totalPrice.reduce((acc, val) => acc + val, 0);
     discount.addEventListener('input', (e) => {
       if (discount.value === 'rs'.toLowerCase()) {
         this.createAppliedPromo('rs');

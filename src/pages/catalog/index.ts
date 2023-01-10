@@ -377,7 +377,7 @@ class CatalogPage extends Page {
         //_________________________Add cards of products to div main__products
 
         const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
-        this.createCardsOfProducts(this.data.products, containerForCards);
+        this.createCardsOfProducts(this.getNewData(), containerForCards);
         //____________________________Switching the display of products
 
         const fewProducts = <HTMLButtonElement>this.container.querySelector('.few-products');

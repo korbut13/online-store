@@ -53,6 +53,7 @@ class CatalogPage extends Page {
                 }
                 if (filterName === 'search') {
                     this.valueSearch = filterValues.join('');
+                    this.filterArrSearch = this.searchProduct(this.data.products, this.valueSearch);
                 }
             });
         }
@@ -480,7 +481,8 @@ class CatalogPage extends Page {
 
 
         });
-        this.rangeComponent(containerInputsStock, this.stockRange[0], this.priceRange[1], (min, max) => {
+
+        this.rangeComponent(containerInputsStock, this.stockRange[0], this.stockRange[1], (min, max) => {
             containerForCards.innerHTML = "";
             this.stockRange = [min, max];
             const filtredData = this.getNewData();
@@ -594,6 +596,8 @@ class CatalogPage extends Page {
             window.location.hash = 'catalog-page';
         });
 
+        //__________________________________________Button Copy link________________________________
+
         const copyLink = <HTMLButtonElement>this.container.querySelector('.reset-total__copy-link');
         copyLink.addEventListener('click', () => {
             const text = window.location.href;
@@ -607,7 +611,14 @@ class CatalogPage extends Page {
             }, 1000)
         })
 
+        //________________________________________Button To catalog_________________________________
 
+        const toCatalog = <HTMLButtonElement>this.container.querySelector('.background__buttom');
+
+        function handleButtonClick() {
+            containerForCards.scrollIntoView({ block: "start", behavior: "smooth" });
+        }
+        toCatalog.addEventListener('click', handleButtonClick);
 
         return this.container;
     }

@@ -1,6 +1,43 @@
+@font-face {
+    font-family: 'Futura';
+    src: url('../../../assets/fonts/FuturaPTLight.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Lovelace';
+    src: url('../../../assets/fonts/Zetafonts\ -\ Lovelace\ Text\ Regular.otf') format('opentype');
+}
+
 .footer {
-  width: 100%;
-  height: 200px;
-  background-color: #fff;
-  border-top: 2px solid #d1d1d1;
+    width: 100%;
+    height: 200px;
+    background-color: #fff;
+    border-top: 2px solid #d1d1d1;
+}
+
+.authors {
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+    padding-top: 30px;
+}
+
+.authors_link,
+.year {
+    font-family: Futura;
+    font-size: 20px;
+    color: rgb(81, 116, 125);
+}
+
+.authors_links a {
+    color: rgb(81, 116, 125);
+    display: flex;
+    flex-direction: column;
+}
+
+.rs_img {
+    width: 100px;
+    height: 50px;
+    background-image: url(../../../assets/icons/rs_school_js.svg);
+    background-repeat: no-repeat;
 }

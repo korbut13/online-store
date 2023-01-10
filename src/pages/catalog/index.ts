@@ -292,7 +292,7 @@ class CatalogPage extends Page {
         <div class="background__img_top" > </div>
             <div class="background__img_info">
                 <p class="background__text" > WINTER 2023 </p>
-                <a class="background__buttom" href="#catalog-page"> TO CATALOG </a>
+                <button class="background__buttom" href="#catalog-page"> TO CATALOG </button>
             </div>
             <div class="background__img_left" > </div>
             <div class="background__img_right" > </div>

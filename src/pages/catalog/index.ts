@@ -53,6 +53,7 @@ class CatalogPage extends Page {
                 }
                 if (filterName === 'search') {
                     this.valueSearch = filterValues.join('');
+                    this.filterArrSearch = this.searchProduct(this.data.products, this.valueSearch);
                 }
             });
         }
@@ -480,7 +481,8 @@ class CatalogPage extends Page {
 
 
         });
-        this.rangeComponent(containerInputsStock, this.stockRange[0], this.priceRange[1], (min, max) => {
+
+        this.rangeComponent(containerInputsStock, this.stockRange[0], this.stockRange[1], (min, max) => {
             containerForCards.innerHTML = "";
             this.stockRange = [min, max];
             const filtredData = this.getNewData();

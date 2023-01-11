@@ -1,0 +1,341 @@
+@font-face {
+  font-family: 'Futura';
+  src: url('../../assets/fonts/FuturaPTLight.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Lovelace';
+  src: url('../../assets/fonts/Zetafonts\ -\ Lovelace\ Text\ Regular.otf') format('opentype');
+}
+
+.cart__wrapper {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cart__title {
+  margin-top: 80px;
+  font-size: 46px;
+  color: #474a51;
+}
+
+.cart__text {
+  margin-top: 40px;
+  font-family: 'Futura';
+  font-size: 18px;
+  line-height: 130%;
+  color: #9f9d9d;
+}
+
+.products__container {
+  display: flex;
+  justify-content: space-between;
+  column-gap: 5em;
+  height: 770px;
+}
+
+.cards__container {
+  margin-top: 80px;
+}
+
+.card__info {
+  height: 230px;
+  padding-top: 30px;
+  display: flex;
+  gap: 15px;
+  background-color: #fff;
+  border-top: 2px solid #9f9d9d;
+}
+
+.card__info-container {
+  width: 220px;
+}
+
+.card__info-img {
+  width: 220px;
+  height: 160px;
+}
+
+.card__info-details {
+  width: 52%;
+}
+
+.card__info-title {
+  font-family: 'Futura';
+  font-size: 24px;
+  line-height: 130%;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #474a51;
+}
+
+.card__info-desc {
+  margin-top: 10px;
+  font-family: 'Futura';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 130%;
+  color: #474a51;
+}
+
+.card__info-controls {
+  width: 18%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.controls__info {
+  display: flex;
+  align-items: center;
+  margin: 30px 0;
+}
+
+.controls__info-btn {
+  width: 28px;
+  height: 28px;
+  font-family: 'Lovelace';
+  font-size: 24px;
+  background-color: #fff;
+  border: 1px solid #474a51;
+  cursor: pointer;
+}
+
+.controls__info-btn:hover,
+.pagination__btn:hover {
+  background-color: #dde8f6;
+  border: 1px solid #dde8f6;
+}
+
+.card__info-quantity {
+  margin: 0 15px;
+  font-family: 'Futura';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 130%;
+  color: #474a51;
+}
+
+.order__info {
+  width: 400px;
+  height: 460px;
+  margin-top: 80px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cart__total {
+  font-family: 'Futura';
+  font-size: 30px;
+  line-height: 130%;
+  color: #474a51;
+}
+
+.cart__total-price {
+  margin-top: 10px;
+}
+
+.cart__total.old {
+  text-decoration: line-through;
+}
+
+.cart__promo-price {
+  display: none;
+}
+
+.cart__promo-price.new {
+  display: block;
+  margin-top: 10px;
+}
+
+.promo__container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+}
+
+.promo__container-input {
+  width: 280px;
+  height: 51px;
+  border: none;
+  border-bottom: 1px solid #474a51;
+}
+
+.promo__container-input:focus {
+  outline: none;
+}
+
+.promo__container-info {
+  margin-top: 10px;
+  font-family: 'Futura';
+  font-size: 22px;
+  line-height: 130%;
+  color: #1c4b8a;
+  text-align: center;
+}
+
+.cart__button {
+  /* width: 211px; */
+  height: 51px;
+  margin-top: 10px;
+  padding: 15px 35px;
+  background: #dde8f6;
+  border: 1px solid #dde8f6;
+  cursor: pointer;
+}
+
+.cart__button:hover {
+  background: #838e9c;
+  border: 1px solid #838e9c;
+  color: #fff;
+}
+
+.applied-promo__container {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.applied-promo__title {
+  font-family: 'Lovelace';
+  font-size: 20px;
+  line-height: 130%;
+  color: #474a51;
+}
+
+.applied-promo__text {
+  margin-top: 10px;
+  font-family: 'Futura';
+  font-size: 20px;
+  line-height: 130%;
+  color: #474a51;
+}
+
+.applied-promo__btn {
+  padding: 4px;
+  border: 1px solid #474a51;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination__btn {
+  width: 34px;
+  height: 34px;
+  margin-right: 10px;
+  font-family: 'Futura';
+  font-size: 20px;
+  background-color: #fff;
+  border: 1px solid #474a51;
+  cursor: pointer;
+}
+
+.overlay {
+  background-color: #29292999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  height: 100vh;
+  width: 100vw;
+  cursor: pointer;
+}
+
+.modal__container {
+  width: 550px;
+  height: 550px;
+  padding: 20px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  top: 17%;
+  left: 30%;
+  background-color: #fff;
+  border-radius: 5px;
+}
+
+.personal-details__wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.details__title,
+.order__title {
+  margin-top: 20px;
+  font-family: 'Futura';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 130%;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #474a51;
+}
+
+.details__input {
+  width: 320px;
+  height: 45px;
+  display: block;
+  border: none;
+  border-bottom: 1px solid #474a51;
+}
+
+.payment__wrapper {
+  display: flex;
+}
+
+.payment-icon {
+  width: 60px;
+  height: 45px;
+  margin-right: 10px;
+  background-color: #fff;
+}
+
+.card__input {
+  width: 250px;
+}
+
+.input-number::-webkit-outer-spin-button,
+.input-number::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.input-number,
+.input-number:hover,
+.input-number:focus {
+  appearance: none;
+  -moz-appearance: textfield;
+}
+
+.card-params__wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-params__wrapper .details__input {
+  width: 140px;
+}
+
+.details__input:focus {
+  outline: none;
+}
+
+.error {
+  margin-top: 5px;
+  font-family: 'Futura';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0.02em;
+  color: #ff0000;
+}

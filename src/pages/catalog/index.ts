@@ -20,6 +20,7 @@ class CatalogPage extends Page {
     private stockRange: [number, number];
     private cardExemp: CardProduct;
     private filterCategory: FilterProduct;
+    private selectedValue: string;
 
     constructor(id: string) {
         super(id);
@@ -30,6 +31,7 @@ class CatalogPage extends Page {
         this.filteraArrBrand = [];
         this.filterArrSearch = [];
         this.valueSearch = '';
+        this.selectedValue = '';
 
         const splittedHash: string[] = window.location.hash.slice(1).split('?');
         let filters: string = splittedHash[1];
@@ -274,6 +276,9 @@ class CatalogPage extends Page {
         if (this.valueSearch.length !== 0) {
             filterValue += `search=${this.valueSearch}&`;
         }
+        if (this.selectedValue.length !== 0) {
+            filterValue += `sort=${this.selectedValue}&`
+        }
         return filterValue.slice(0, -1);
     }
 
@@ -379,6 +384,7 @@ class CatalogPage extends Page {
 
         const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
         this.createCardsOfProducts(this.getNewData(), containerForCards);
+
         //____________________________Switching the display of products
 
         const fewProducts = <HTMLButtonElement>this.container.querySelector('.few-products');
@@ -500,39 +506,43 @@ class CatalogPage extends Page {
 
         const options = <HTMLElement>this.container.querySelector('.sort-of-products-select');
         options.addEventListener('change', (event) => {
-            const selectedValue: string = (<HTMLInputElement>event.target).value;
+            this.selectedValue = (<HTMLInputElement>event.target).value;
 
-            if (selectedValue === "price-ASC") {
+            if (this.selectedValue === "price-ASC") {
                 const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => a.price - b.price));
                 if (manyProducts.className === 'many-products active') {
                     this.toggleClasses();
                 }
+                this.replaceFilterString();
             }
-            if (selectedValue === "price-DESC") {
+            if (this.selectedValue === "price-DESC") {
                 const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => b.price - a.price));
                 if (manyProducts.className === 'many-products active') {
                     this.toggleClasses();
                 }
+                this.replaceFilterString();
             }
-            if (selectedValue === "rating-ASC") {
+            if (this.selectedValue === "rating-ASC") {
                 const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => a.rating - b.rating));
                 if (manyProducts.className === 'many-products active') {
                     this.toggleClasses();
                 }
+                this.replaceFilterString();
             }
-            if (selectedValue === "rating-DESC") {
+            if (this.selectedValue === "rating-DESC") {
                 const filtredData: IProduct[] = this.getNewData();
                 containerForCards.innerHTML = ""
                 this.createCardsOfProducts(filtredData.sort((a, b) => b.rating - a.rating));
                 if (manyProducts.className === 'many-products active') {
                     this.toggleClasses();
                 }
+                this.replaceFilterString();
             }
         })
 

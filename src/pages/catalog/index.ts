@@ -20,6 +20,7 @@ class CatalogPage extends Page {
     private stockRange: [number, number];
     private cardExemp: CardProduct;
     private filterCategory: FilterProduct;
+    private selectedValue: string;
 
     constructor(id: string) {
         super(id);
@@ -30,6 +31,7 @@ class CatalogPage extends Page {
         this.filteraArrBrand = [];
         this.filterArrSearch = [];
         this.valueSearch = '';
+        this.selectedValue = '';
 
         const splittedHash: string[] = window.location.hash.slice(1).split('?');
         let filters: string = splittedHash[1];
@@ -55,6 +57,9 @@ class CatalogPage extends Page {
                     this.valueSearch = filterValues.join('');
                     this.filterArrSearch = this.searchProduct(this.data.products, this.valueSearch);
                 }
+                if (filterName === 'sort') {
+                    this.selectedValue = filterValues.join('');
+                }
             });
         }
 
@@ -64,7 +69,6 @@ class CatalogPage extends Page {
 
     createCardsOfProducts(arrFiltredProducts: IProduct[], containerForCards = <HTMLElement>this.container.querySelector('.main__products')): void {
         const countOfProducts = <HTMLElement>this.container.querySelector('.count-of-products');
-        console.log(countOfProducts)
         countOfProducts.innerHTML = `Find: ${arrFiltredProducts.length}`;
         if (arrFiltredProducts.length === 0) {
             containerForCards.innerHTML = "Nothing found &#129488;"
@@ -274,6 +278,9 @@ class CatalogPage extends Page {
         if (this.valueSearch.length !== 0) {
             filterValue += `search=${this.valueSearch}&`;
         }
+        if (this.selectedValue.length !== 0) {
+            filterValue += `sort=${this.selectedValue}&`
+        }
         if (manyProducts.className === "many-products active") {
             filterValue += `big=false&`;
         }
@@ -290,6 +297,36 @@ class CatalogPage extends Page {
         const url = new URL(window.location.toString());
         url.hash = path + '?' + newFilterValue;
         window.history.pushState({}, '', url);
+    }
+
+    sort() {
+        const filtredData: IProduct[] = this.getNewData();
+        const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
+        const manyProducts = <HTMLButtonElement>this.container.querySelector('.many-products');
+        const containerInputsPrice = <HTMLElement>this.container.querySelector('.price');
+        const containerInputsStock = <HTMLElement>this.container.querySelector('.stock');
+
+        containerForCards.innerHTML = "";
+        if (this.selectedValue === "") {
+            this.createCardsOfProducts(filtredData);
+        }
+        if (this.selectedValue === "price-ASC") {
+            this.createCardsOfProducts(filtredData.sort((a, b) => a.price - b.price));
+        }
+        if (this.selectedValue === "price-DESC") {
+            this.createCardsOfProducts(filtredData.sort((a, b) => b.price - a.price));
+        }
+        if (this.selectedValue === "rating-ASC") {
+            this.createCardsOfProducts(filtredData.sort((a, b) => a.rating - b.rating));
+        }
+        if (this.selectedValue === "rating-DESC") {
+            this.createCardsOfProducts(filtredData.sort((a, b) => b.rating - a.rating));
+        }
+        this.recalcFoundProducts(this.getNewData(), containerInputsPrice, containerInputsStock);
+        if (manyProducts.className === 'many-products active') {
+            this.toggleClasses();
+        }
+        this.replaceFilterString()
     }
 
 
@@ -384,19 +421,29 @@ class CatalogPage extends Page {
         //_________________________Add cards of products to div main__products
         const fewProducts = <HTMLButtonElement>this.container.querySelector('.few-products');
         const manyProducts = <HTMLButtonElement>this.container.querySelector('.many-products');
+        const containerInputsPrice = <HTMLElement>this.container.querySelector('.price');
+        const containerInputsStock = <HTMLElement>this.container.querySelector('.stock');
         const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
 
         this.createCardsOfProducts(this.getNewData(), containerForCards);
+        this.recalcFoundProducts(this.getNewData(), containerInputsPrice, containerInputsStock);
+
+
         if (window.location.hash.includes("big=false")) {
             this.toggleClasses();
             fewProducts.classList.remove('active');
-            fewProducts.classList.add('inactive')
-            fewProducts.disabled = false
-            manyProducts.classList.remove('inactive')
-            manyProducts.classList.add('active')
-            manyProducts.disabled = true
+            fewProducts.classList.add('inactive');
+            fewProducts.disabled = false;
+            manyProducts.classList.remove('inactive');
+            manyProducts.classList.add('active');
+            manyProducts.disabled = true;
         }
+        if (window.location.hash.includes("sort")) {
+            this.sort();
+        }
+
         //____________________________Switching the display of products
+
         manyProducts.addEventListener('click', () => {
             this.toggleClasses();
             manyProducts.classList.add('active');
@@ -406,7 +453,6 @@ class CatalogPage extends Page {
             fewProducts.classList.remove('active')
             fewProducts.disabled = false;
             this.replaceFilterString();
-
         })
 
         fewProducts.addEventListener('click', () => {
@@ -417,8 +463,7 @@ class CatalogPage extends Page {
             manyProducts.disabled = false;
             manyProducts.classList.remove('active');
             manyProducts.classList.add('inactive')
-            this.replaceFilterString()
-
+            this.replaceFilterString();
         })
 
 
@@ -457,8 +502,11 @@ class CatalogPage extends Page {
                 this.recalcFoundProducts(this.getNewData(), containerInputsPrice, containerInputsStock);
                 if (manyProducts.className === 'many-products active') {
                     this.toggleClasses();
-                }
+                };
                 this.replaceFilterString();
+                if (this.selectedValue.length !== 0) {
+                    this.sort();
+                }
             })
         }
 
@@ -479,21 +527,18 @@ class CatalogPage extends Page {
                     this.toggleClasses();
                 }
                 this.replaceFilterString();
+                if (this.selectedValue.length !== 0) {
+                    this.sort();
+                }
             })
         }
 
 
-
-
         //_________________________Adding filtering functionality by price
-
-        const containerInputsPrice = <HTMLElement>this.container.querySelector('.price');
-        const containerInputsStock = <HTMLElement>this.container.querySelector('.stock');
 
         this.rangeComponent(containerInputsPrice, this.priceRange[0], this.priceRange[1], (min, max) => {
 
             containerForCards.innerHTML = "";
-
             this.priceRange = [min, max];
             const filtredData = this.getNewData();
             this.createCardsOfProducts(filtredData);
@@ -502,8 +547,9 @@ class CatalogPage extends Page {
                 this.toggleClasses();
             }
             this.replaceFilterString()
-
-
+            if (this.selectedValue.length !== 0) {
+                this.sort();
+            };
         });
 
         this.rangeComponent(containerInputsStock, this.stockRange[0], this.stockRange[1], (min, max) => {
@@ -516,6 +562,9 @@ class CatalogPage extends Page {
                 this.toggleClasses();
             }
             this.replaceFilterString();
+            if (this.selectedValue.length !== 0) {
+                this.sort();
+            }
         })
 
 
@@ -524,40 +573,8 @@ class CatalogPage extends Page {
 
         const options = <HTMLElement>this.container.querySelector('.sort-of-products-select');
         options.addEventListener('change', (event) => {
-            const selectedValue: string = (<HTMLInputElement>event.target).value;
-
-            if (selectedValue === "price-ASC") {
-                const filtredData: IProduct[] = this.getNewData();
-                containerForCards.innerHTML = ""
-                this.createCardsOfProducts(filtredData.sort((a, b) => a.price - b.price));
-                if (manyProducts.className === 'many-products active') {
-                    this.toggleClasses();
-                }
-            }
-            if (selectedValue === "price-DESC") {
-                const filtredData: IProduct[] = this.getNewData();
-                containerForCards.innerHTML = ""
-                this.createCardsOfProducts(filtredData.sort((a, b) => b.price - a.price));
-                if (manyProducts.className === 'many-products active') {
-                    this.toggleClasses();
-                }
-            }
-            if (selectedValue === "rating-ASC") {
-                const filtredData: IProduct[] = this.getNewData();
-                containerForCards.innerHTML = ""
-                this.createCardsOfProducts(filtredData.sort((a, b) => a.rating - b.rating));
-                if (manyProducts.className === 'many-products active') {
-                    this.toggleClasses();
-                }
-            }
-            if (selectedValue === "rating-DESC") {
-                const filtredData: IProduct[] = this.getNewData();
-                containerForCards.innerHTML = ""
-                this.createCardsOfProducts(filtredData.sort((a, b) => b.rating - a.rating));
-                if (manyProducts.className === 'many-products active') {
-                    this.toggleClasses();
-                }
-            }
+            this.selectedValue = (<HTMLInputElement>event.target).value;
+            this.sort();
         })
 
         //_______________________Adding filtering functionality by search
@@ -579,6 +596,9 @@ class CatalogPage extends Page {
                     this.toggleClasses();
                 }
                 this.replaceFilterString();
+                if (this.selectedValue.length !== 0) {
+                    this.sort();
+                }
             }
             else {
                 this.filterArrSearch = [];
@@ -590,6 +610,9 @@ class CatalogPage extends Page {
                     this.toggleClasses();
                 }
                 this.replaceFilterString();
+                if (this.selectedValue.length !== 0) {
+                    this.sort();
+                }
             }
         })
 

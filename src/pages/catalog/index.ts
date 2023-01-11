@@ -242,8 +242,7 @@ class CatalogPage extends Page {
         const descriptionOfCards = this.container.getElementsByClassName('card__text');
         const buttonnsOfCards = this.container.getElementsByClassName('container__button');
         const imagesOfCards = this.container.getElementsByClassName('cardImg');
-        const fewProducts = <HTMLButtonElement>this.container.querySelector('.few-products')
-        const manyProducts = <HTMLButtonElement>this.container.querySelector('.many-products');
+
 
         for (const card of cardsOfProducts) {
             card.classList.toggle('card-many-cards');
@@ -263,6 +262,7 @@ class CatalogPage extends Page {
     }
 
     createFilterString(): string {
+        const manyProducts = <HTMLButtonElement>this.container.querySelector('.many-products');
         let filterValue: string = `price=${this.priceRange[0]},${this.priceRange[1]}&stock=${this.stockRange[0]},${this.stockRange[1]}&`;
 
         if (this.filteraArrCategory.length !== 0) {
@@ -274,11 +274,17 @@ class CatalogPage extends Page {
         if (this.valueSearch.length !== 0) {
             filterValue += `search=${this.valueSearch}&`;
         }
+        if (manyProducts.className === "many-products active") {
+            filterValue += `big=false&`;
+        }
+        if (manyProducts.className === "many-products inactive") {
+            filterValue += `big=true&`;
+        }
+
         return filterValue.slice(0, -1);
     }
 
     replaceFilterString(): void {
-
         const newFilterValue = this.createFilterString();
         const path = window.location.hash.slice(1).split('?')[0];
         const url = new URL(window.location.toString());
@@ -324,7 +330,7 @@ class CatalogPage extends Page {
                 </div>
                 <div class="display-products">
                     <button class="many-products"></button>
-                    <button class="few-products active"></button>
+                    <button class="few-products active" disabled></button>
                 </div>
             </div>
             <div class="products__wrapper">
@@ -376,26 +382,44 @@ class CatalogPage extends Page {
 
 
         //_________________________Add cards of products to div main__products
-
-        const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
-        this.createCardsOfProducts(this.getNewData(), containerForCards);
-        //____________________________Switching the display of products
-
         const fewProducts = <HTMLButtonElement>this.container.querySelector('.few-products');
         const manyProducts = <HTMLButtonElement>this.container.querySelector('.many-products');
+        const containerForCards = <HTMLElement>this.container.querySelector('.main__products');
 
+        this.createCardsOfProducts(this.getNewData(), containerForCards);
+        if (window.location.hash.includes("big=false")) {
+            this.toggleClasses();
+            fewProducts.classList.remove('active');
+            fewProducts.classList.add('inactive')
+            fewProducts.disabled = false
+            manyProducts.classList.remove('inactive')
+            manyProducts.classList.add('active')
+            manyProducts.disabled = true
+        }
+        //____________________________Switching the display of products
         manyProducts.addEventListener('click', () => {
             this.toggleClasses();
-            manyProducts.classList.toggle('active');
-            fewProducts.classList.toggle('active');
+            manyProducts.classList.add('active');
+            manyProducts.classList.remove('inactive');
+            manyProducts.disabled = true;
+            fewProducts.classList.add('inactive');
+            fewProducts.classList.remove('active')
+            fewProducts.disabled = false;
+            this.replaceFilterString();
+
         })
 
         fewProducts.addEventListener('click', () => {
             this.toggleClasses();
-            manyProducts.classList.toggle('active');
-            fewProducts.classList.toggle('active');
-        })
+            fewProducts.classList.remove('inactive');
+            fewProducts.classList.add('active');
+            fewProducts.disabled = true;
+            manyProducts.disabled = false;
+            manyProducts.classList.remove('active');
+            manyProducts.classList.add('inactive')
+            this.replaceFilterString()
 
+        })
 
 
         //________________________Add filters by category and brand in layout
